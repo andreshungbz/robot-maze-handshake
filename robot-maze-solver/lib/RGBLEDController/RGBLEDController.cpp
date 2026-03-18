@@ -1,11 +1,7 @@
 #include "RGBLEDController.h"
 
+#include "MegaPiUtils.h"
 #include "MeMegaPi.h"
-
-static bool isValidPort(uint8_t port) {
-    // MegaPi valid ports for modules is from 5 to 8
-    return port >= 5 && port <= 8;
-}
 
 void setGreen(uint8_t port) {
     if (!isValidPort(port)) {
