@@ -13,10 +13,16 @@ public:
     void driveForward(int speed);
     // driveBackward moves the robot backwards.
     void driveBackward(int speed);
-    // pivotLeft moves the robot turn 90 degrees to the left.
+
+    // pivotLeft turns the robot to the left.
     void pivotLeft(int speed);
-    // pivotRight moves the robot turn 90 degrees to the right.
+    // pivotLeft90 turns the robot 90 degrees to the left.
+    void pivotLeft90();
+    // pivotRight moves the robot to the right.
     void pivotRight(int speed);
+    // pivotRight90 turns the robot 90 degrees to the right.
+    void pivotRight90();
+    
     // stop makes the robot wheels stop moving.
     void stop();
 
