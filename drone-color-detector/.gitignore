@@ -1,0 +1,5 @@
+# Local metadata files
+.DS_Store
+
+# Binaries
+bin/
