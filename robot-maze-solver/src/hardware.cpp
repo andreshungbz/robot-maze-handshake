@@ -2,7 +2,7 @@
 
 /* Configuration: Me RGB LED Module */
 
-MeRGBLed led(PORT_8);
+MeRGBLed led(PORT_5);
 constexpr uint8_t LED_COUNT{4};
 
 // hw_set_rgb_led_color sets all LED components to one color.
@@ -23,4 +23,13 @@ MeMegaPiDCMotor rightMotor(PORT2B);
 void hw_set_motor_speed(int leftSpeed, int rightSpeed) {
     leftMotor.run(leftSpeed);
     rightMotor.run(-rightSpeed); // flip right motor since it is reversed on the robot
+}
+
+/* Configuration: Me Ultrasonic Sensor */
+
+MeUltrasonicSensor ultrasonic(PORT_6);
+
+// hw_get_ultrasonic_distance returns distance in cm.
+uint16_t hw_get_ultrasonic_distance() {
+    return ultrasonic.distanceCm();
 }

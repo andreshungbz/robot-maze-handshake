@@ -2,73 +2,32 @@
 
 #include "RGBLEDController.h"
 #include "MotorController.h"
+#include "UltrasonicSensor.h"
 
 RGBLEDController rgbLED;
 MotorController motors;
+UltrasonicSensor usSensor;
 
 void setup() {
-    // rgbLED.setGreen();
+    Serial.begin(9600); // debugging
 
-    // forward
-    motors.driveForward(125);
-    delay(3500);
-    motors.stop();
-    delay(1000);
+    rgbLED.setGreen();
 
-    // pivot right
-    motors.pivotRight(125);
-    delay(500);
-    motors.stop();
-    delay(1000);
-    
-    // pivot right
-    motors.pivotRight(125);
-    delay(490);
-    motors.stop();
-    delay(1000);
+    motors.pivotLeft90();
+    motors.pivotLeft90();
+    motors.pivotLeft90();
+    motors.pivotLeft90();
 
-    // pivot right
-    motors.pivotRight(125);
-    delay(490);
-    motors.stop();
-    delay(1000);
-
-    // pivot right
-    motors.pivotRight(125);
-    delay(490);
-    motors.stop();
-    delay(1000);
-
-    // pivot left
-    motors.pivotLeft(120);
-    delay(490);
-    motors.stop();
-    delay(1000);
-
-    // pivot left
-    motors.pivotLeft(120);
-    delay(500);
-    motors.stop();
-    delay(1000);
-
-    // pivot left
-    motors.pivotLeft(120);
-    delay(500);
-    motors.stop();
-    delay(1000);
-
-    // pivot left
-    motors.pivotLeft(120);
-    delay(500);
-    motors.stop();
-    delay(1000);
-
-    // reverse
-    motors.driveBackward(175);
-    delay(250);
-    motors.stop();
+    motors.pivotRight90();
+    motors.pivotRight90();
+    motors.pivotRight90();
+    motors.pivotRight90();
 }
 
 void loop() {
+    Serial.print("Me Ultrasonic Sensor: ");
+    Serial.print(usSensor.getDistanceCm());
+    Serial.println(" cm");
 
+    delay(500);
 }
