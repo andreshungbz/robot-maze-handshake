@@ -13,3 +13,14 @@ void hw_set_rgb_led_color(uint8_t r, uint8_t g, uint8_t b) {
     
     led.show();
 }
+
+/* Configuration: Me DC Motor */
+
+MeMegaPiDCMotor leftMotor(PORT1B);
+MeMegaPiDCMotor rightMotor(PORT2B);
+
+// hw_set_motor_speed sets the running speed of the motors to turn the wheels.
+void hw_set_motor_speed(int leftSpeed, int rightSpeed) {
+    leftMotor.run(leftSpeed);
+    rightMotor.run(-rightSpeed); // flip right motor since it is reversed on the robot
+}
