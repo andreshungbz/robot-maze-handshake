@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include "RGBLEDController.h"
 
-void setup() {
+RGBLEDController rgbLED;
 
+void setup() {
+    rgbLED.setGreen();
 }
 
 void loop() {
-    setGreen(8);
+
 }

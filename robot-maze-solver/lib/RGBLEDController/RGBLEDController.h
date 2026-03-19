@@ -1,9 +1,13 @@
 #pragma once
-
 #include <Arduino.h>
 
-// LED_COUNT represents the number of LEDs on the RGB LED module.
-constexpr uint8_t LED_COUNT = 4;
+// RGBLEDController controls the RGB LED module.
+class RGBLEDController {
+public:
+    // setGreen sets the color to pure green (0, 255, 0).
+    void setGreen();
 
-// setGreen sets all LEDs on the RGB LED module to pure green.
-void setGreen(uint8_t port);
+private:
+    // setColor sets the color to the RGB parameters.
+    void setColor(uint8_t r, uint8_t g, uint8_t b);
+};

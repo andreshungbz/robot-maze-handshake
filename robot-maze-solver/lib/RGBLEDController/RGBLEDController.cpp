@@ -1,20 +1,12 @@
 #include "RGBLEDController.h"
 
-#include "MegaPiUtils.h"
-#include "MeMegaPi.h"
+// forward declaration
+void hw_set_rgb_led_color(uint8_t r, uint8_t g, uint8_t b);
 
-void setGreen(uint8_t port) {
-    if (!isValidPort(port)) {
-        return;
-    }
+void RGBLEDController::setGreen() {
+    setColor(0, 255, 0);
+}
 
-    MeRGBLed led(port);
-
-    // configure every LED to pure green
-    for (uint8_t t{0}; t < LED_COUNT; ++t) {
-        led.setColorAt(t, 0, 255, 0);
-    }
-
-    // activate LEDs
-    led.show();
+void RGBLEDController::setColor(uint8_t r, uint8_t g, uint8_t b) {
+    hw_set_rgb_led_color(r, g, b);
 }
