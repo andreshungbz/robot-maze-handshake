@@ -1,6 +1,6 @@
 #include "MeMegaPi.h"
 
-/* Configuration: Me RGB LED Module */
+/* CONFIGURATION: Me RGB LED Module */
 
 MeRGBLed led(PORT_5);
 constexpr uint8_t LED_COUNT{4};
@@ -14,7 +14,7 @@ void hw_set_rgb_led_color(uint8_t r, uint8_t g, uint8_t b) {
     led.show();
 }
 
-/* Configuration: Me DC Motor */
+/* CONFIGURATION: Me DC Motor */
 
 MeMegaPiDCMotor leftMotor(PORT1B);
 MeMegaPiDCMotor rightMotor(PORT2B);
@@ -25,7 +25,7 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed) {
     rightMotor.run(-rightSpeed); // flip right motor since it is reversed on the robot
 }
 
-/* Configuration: Me Ultrasonic Sensor */
+/* CONFIGURATION: Me Ultrasonic Sensor */
 
 MeUltrasonicSensor ultrasonic(PORT_6);
 
@@ -34,7 +34,7 @@ uint16_t hw_get_ultrasonic_distance() {
     return ultrasonic.distanceCm();
 }
 
-/* Configuration: Me Line Follower Sensor */
+/* CONFIGURATION: Me Line Follower Sensor */
 
 MeLineFollower lineFinder(PORT_7);
 

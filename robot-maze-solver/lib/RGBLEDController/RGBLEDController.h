@@ -8,6 +8,8 @@ public:
     void setGreen();
 
 private:
+    // Helper Methods
+
     // setColor sets the color to the RGB parameters.
     void setColor(uint8_t r, uint8_t g, uint8_t b);
 };

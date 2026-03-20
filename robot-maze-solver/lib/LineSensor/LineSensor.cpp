@@ -3,6 +3,8 @@
 // forward declaration for function in hardware.cpp
 uint8_t hw_read_line_sensor();
 
+// Public Methods
+
 bool LineSensor::isWallAhead() {
     uint8_t value = getSensors();
 

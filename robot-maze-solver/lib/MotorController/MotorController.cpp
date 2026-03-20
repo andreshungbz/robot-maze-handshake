@@ -3,6 +3,8 @@
 // forward declaration for function in hardware.cpp
 void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 
+// Public Methods
+
 void MotorController::driveForwardWithCorrection(
     uint16_t distanceCm, uint16_t target, uint16_t correction) {
     if (distanceCm > target + 1) {
@@ -50,6 +52,8 @@ void MotorController::pivotRight90() {
 void MotorController::stop() {
     drive(0, 0);
 }
+
+// Private Helper Methods
 
 void MotorController::drive(int leftSpeed, int rightSpeed) {
     hw_set_motor_speed(leftSpeed, rightSpeed);

@@ -27,9 +27,6 @@ public:
     void stop();
 
 private:
-    // drive interfaces with the hardware to change the motor speeds, driving the robot.
-    void drive(int leftSpeed, int rightSpeed);
-
     // MotorController Configuration
     
     static constexpr int BASE_SPEED{150};
@@ -37,4 +34,9 @@ private:
     static constexpr int LEFT_TURN_90_DELAY{500};
     static constexpr int RIGHT_TURN_90_SPEED{125};
     static constexpr int RIGHT_TURN_90_DELAY{500};
+
+    // Helper Methods
+
+    // drive interfaces with the hardware to change the motor speeds, driving the robot.
+    void drive(int leftSpeed, int rightSpeed);
 };

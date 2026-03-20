@@ -3,6 +3,8 @@
 // forward declaration for function in hardware.cpp
 int hw_get_ultrasonic_distance();
 
+// Public Methods
+
 uint16_t UltrasonicSensor::getDistanceCm() {
     // take 3 readings
     uint16_t a = hw_get_ultrasonic_distance();
