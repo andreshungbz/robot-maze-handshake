@@ -1,14 +1,6 @@
 #pragma once
 #include <Arduino.h>
 
-// MotorController Configuration
-
-constexpr int BASE_SPEED{150};
-constexpr int LEFT_TURN_90_SPEED{120};
-constexpr int LEFT_TURN_90_DELAY{500};
-constexpr int RIGHT_TURN_90_SPEED{125};
-constexpr int RIGHT_TURN_90_DELAY{500};
-
 // MotorController controls the Motor module.
 class MotorController {
 public:
@@ -37,4 +29,12 @@ public:
 private:
     // drive interfaces with the hardware to change the motor speeds, driving the robot.
     void drive(int leftSpeed, int rightSpeed);
+
+    // MotorController Configuration
+    
+    static constexpr int BASE_SPEED{150};
+    static constexpr int LEFT_TURN_90_SPEED{120};
+    static constexpr int LEFT_TURN_90_DELAY{500};
+    static constexpr int RIGHT_TURN_90_SPEED{125};
+    static constexpr int RIGHT_TURN_90_DELAY{500};
 };
