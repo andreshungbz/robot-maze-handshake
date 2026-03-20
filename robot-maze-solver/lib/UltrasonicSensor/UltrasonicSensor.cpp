@@ -1,6 +1,6 @@
 #include "UltrasonicSensor.h"
 
-// forward declaration
+// forward declaration for function in hardware.cpp
 int hw_get_ultrasonic_distance();
 
 uint16_t UltrasonicSensor::getDistanceCm() {

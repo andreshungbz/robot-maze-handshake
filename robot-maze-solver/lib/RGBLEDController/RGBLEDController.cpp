@@ -1,6 +1,6 @@
 #include "RGBLEDController.h"
 
-// forward declaration
+// forward declaration for function in hardware.cpp
 void hw_set_rgb_led_color(uint8_t r, uint8_t g, uint8_t b);
 
 void RGBLEDController::setGreen() {

@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-// LineSensor detects whether there is a wall ahead using the line follower module.
+// LineSensor senses using the line follower module.
 class LineSensor {
 public:
     // isWallAhead returns true if a wall is detected in front.

@@ -1,6 +1,6 @@
 #include "MotorController.h"
 
-// forward declaration
+// forward declaration for function in hardware.cpp
 void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 
 void MotorController::driveForwardWithCorrection(
