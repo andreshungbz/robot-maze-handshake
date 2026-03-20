@@ -33,3 +33,17 @@ MeUltrasonicSensor ultrasonic(PORT_6);
 uint16_t hw_get_ultrasonic_distance() {
     return ultrasonic.distanceCm();
 }
+
+/* Configuration: Me Line Follower Sensor */
+
+MeLineFollower lineFinder(PORT_7);
+
+// hw_read_line_sensor returns the sensor values for the MeLineFollower.
+uint8_t hw_read_line_sensor() {
+    // From the readSensors() documentation:
+    // (0x00)-S1_IN_S2_IN:   sensor1 and sensor2 are both inside of black line
+    // (0x01)-S1_IN_S2_OUT:  sensor1 is inside of black line and sensor2 is outside of black line
+    // (0x02)-S1_OUT_S2_IN:  sensor1 is outside of black line and sensor2 is inside of black line
+    // (0x03)-S1_OUT_S2_OUT: sensor1 and sensor2 are both outside of black line
+    return lineFinder.readSensors();
+}

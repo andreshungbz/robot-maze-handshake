@@ -3,10 +3,12 @@
 #include "RGBLEDController.h"
 #include "MotorController.h"
 #include "UltrasonicSensor.h"
+#include "LineSensor.h"
 
 RGBLEDController rgbLED;
 MotorController motors;
 UltrasonicSensor usSensor;
+LineSensor lfSensor;
 
 void setup() {
     Serial.begin(9600); // debugging
@@ -29,5 +31,9 @@ void loop() {
     Serial.print(usSensor.getDistanceCm());
     Serial.println(" cm");
 
-    delay(500);
+    uint8_t sensorVal = lfSensor.getSensors();
+    Serial.print("Me Line Follower Sensor: 0x");
+    Serial.println(sensorVal, HEX);
+
+    delay(200);
 }
