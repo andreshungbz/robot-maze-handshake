@@ -1,25 +1,33 @@
 #pragma once
 #include <Arduino.h>
 
+// MotorController Configuration
+
+constexpr int BASE_SPEED{150};
+constexpr int LEFT_TURN_90_SPEED{120};
+constexpr int LEFT_TURN_90_DELAY{500};
+constexpr int RIGHT_TURN_90_SPEED{125};
+constexpr int RIGHT_TURN_90_DELAY{500};
+
 // MotorController controls the Motor module.
 class MotorController {
 public:
-    // drive is a lower-level method for setting wheel speeds independently.
-    void drive(int leftSpeed, int rightSpeed);
-
-    // Higher-level Methods using drive.
+    // driveForwardWithCorrection readjusts robot path by examining the
+    // distance to the target wall.
+    void driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, uint16_t correction);
 
     // driveForward moves the robot forwards.
-    void driveForward(int speed);
+    void driveForward(int speed = BASE_SPEED);
     // driveBackward moves the robot backwards.
-    void driveBackward(int speed);
+    void driveBackward(int speed = BASE_SPEED);
 
     // pivotLeft turns the robot to the left.
     void pivotLeft(int speed);
-    // pivotLeft90 turns the robot 90 degrees to the left.
-    void pivotLeft90();
     // pivotRight moves the robot to the right.
     void pivotRight(int speed);
+
+    // pivotLeft90 turns the robot 90 degrees to the left.
+    void pivotLeft90();
     // pivotRight90 turns the robot 90 degrees to the right.
     void pivotRight90();
     
@@ -27,6 +35,6 @@ public:
     void stop();
 
 private:
-    // setSpeed interfaces with the hardware to change the motor speeds.
-    void setSpeed(int leftSpeed, int rightSpeed);
+    // drive interfaces with the hardware to change the motor speeds, driving the robot.
+    void drive(int leftSpeed, int rightSpeed);
 };
