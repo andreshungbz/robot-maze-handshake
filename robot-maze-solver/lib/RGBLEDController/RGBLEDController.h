@@ -6,6 +6,10 @@ class RGBLEDController {
 public:
     // setGreen sets the color to pure green (0, 255, 0).
     void setGreen();
+    // setRed sets the color to pure red (255, 0, 0).
+    void setRed();
+    // turnOff turns all LEDs off (0, 0, 0).
+    void turnOff();
 
 private:
     // Helper Methods
