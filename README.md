@@ -19,7 +19,7 @@ This program is compiled and uploaded to the robot through its serial port.
 
 The second main program that communicates with the drone via a UDP server. It continuously checks the drone's video feed for the specific color signal emitted by the robot. Once the color signal is detected, it sends a series of commands to the drone.
 
-This program runs in a separate process on a computer connected to the same network as the drone.
+This program runs in a separate process on a computer connected to the same network as the drone and requires [OpenCV](https://opencv.org) to be separately installed.
 
 ### `robot-bt-controller` (Go)
 
