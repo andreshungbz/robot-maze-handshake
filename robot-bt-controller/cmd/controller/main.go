@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 )
 
 func main() {
+	introduction()
+
 	// parse mode flag
 	mode := flag.String("mode", "keyboard", "Program mode (keyboard|gamepad)")
 	flag.Parse()
@@ -41,4 +44,17 @@ func main() {
 	if err := ctrl.Run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func introduction() {
+	const (
+		PURPLE = "\u001B[95m"
+		RESET  = "\u001B[0m"
+	)
+
+	fmt.Printf("%-35s %s\n", PURPLE+"[robot-bl-controller]"+RESET,
+		"Program for connecting a game controller and sending commands to the robot.")
+	fmt.Printf("%-35s %s\n", PURPLE+"[Project Repository]"+RESET,
+		"https://github.com/andreshungbz/robot-maze-handshake")
+	fmt.Println()
 }
