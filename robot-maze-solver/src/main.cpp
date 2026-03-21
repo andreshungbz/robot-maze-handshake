@@ -5,29 +5,81 @@
 #include "UltrasonicSensor.h"
 #include "LineSensor.h"
 #include "MazeSolver.h"
+#include "BLEController.h"
 
+// Mode represents the configurations of the program.
+enum class Mode {
+    MANUAL, // the robot is controlled via the robot-bt-controller program.
+    AUTONOMOUS // the robot navigates the maze automatically using the right-hand rule.
+};
+
+// Mode Configuration
+
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{50};
+
+// Component initializations 
 RGBLEDController rgbLED{};
 MotorController motors{};
 UltrasonicSensor usSensor{};
 LineSensor lfSensor{};
+BLEController ble{};
 
+// MazeSolver initialization
 MazeSolver mazeSolver{motors, usSensor, lfSensor};
 
+// Toggle-able variables and their initial values
+Mode currentMode{Mode::MANUAL};
+bool RGBLEDOn{false};
+
 void setup() {
-    // debugging from the MegaPi serial port
-    Serial.begin(9600);
+    Serial.begin(9600); // debugging/monitoring
+    ble.begin(115200); // Makeblock BLEV1.0_Z module
+
+    Serial.println("[robot-maze-solver] Starting in [MANUAL] mode...");
 }
 
 void loop() {
-    mazeSolver.update();
+    // [MANUAL] Mode
+    if (currentMode == Mode::MANUAL) {
+        // parse available BLE data
+        if (ble.available()) {
+            char cmd = ble.read();
+            switch (cmd) {
+                // RGB LED Toggle
+                case 'G':
+                    if (RGBLEDOn) {
+                        rgbLED.turnOff();
+                        Serial.println("[MANUAL]: RGB LED turned OFF");
+                    } else {
+                        rgbLED.setGreen();
+                        Serial.println("[MANUAL]: RGB LED set to GREEN");
+                    }
+                    RGBLEDOn = !RGBLEDOn;
+                    break;
 
-    if (mazeSolver.isGoalReached()) {
-        rgbLED.setGreen();
-        motors.stop();
-        while (true) {
-            delay(1000); // keep robot stopped
+                // [AUTONOMOUS] Mode
+                case 'A':
+                    currentMode = Mode::AUTONOMOUS;
+                    Serial.println("[robot-maze-solver] switched to [AUTONOMOUS] mode");
+                    break;
+            }
         }
     }
 
-    delay(100);
+    // [AUTONOMOUS] Mode
+    else if (currentMode == Mode::AUTONOMOUS) {
+        // continue maze navigation using the right-hand rule.
+        mazeSolver.update();
+
+        // if the final point is achieved, turn on RGB LED and stop motors indefinitely
+        if (mazeSolver.isGoalReached()) {
+            rgbLED.setGreen();
+            motors.stop();
+
+            Serial.println("[AUTONOMOUS] Goal reached! Robot stopped.");
+            while (true) delay(1000);
+        }
+    }
+
+    delay(AUTONOMOUS_MAIN_LOOP_DELAY);
 }

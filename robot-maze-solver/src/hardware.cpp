@@ -2,7 +2,7 @@
 
 /* CONFIGURATION: Me RGB LED Module */
 
-MeRGBLed led(PORT_5);
+MeRGBLed led(PORT_8);
 constexpr uint8_t LED_COUNT{4};
 
 // hw_set_rgb_led_color sets all LED components to one color.
@@ -46,4 +46,29 @@ uint8_t hw_read_line_sensor() {
     // (0x02)-S1_OUT_S2_IN:  sensor1 is outside of black line and sensor2 is inside of black line
     // (0x03)-S1_OUT_S2_OUT: sensor1 and sensor2 are both outside of black line
     return lineFinder.readSensors();
+}
+
+/* CONFIGURATION: Makeblock BLEV1.0_Z module */
+
+// hw_ble_begin initializes the UART used by BLE module
+void hw_ble_begin(long baudRate) {
+    Serial3.begin(baudRate);
+}
+
+// hw_ble_available returns true if data is available.
+bool hw_ble_available() {
+    return Serial3.available() > 0;
+}
+
+// hw_ble_read reads one byte.
+char hw_ble_read() {
+    if (Serial3.available() > 0) {
+        return Serial3.read();
+    }
+    return 0;
+}
+
+// hw_ble_write writes one byte.
+void hw_ble_write(char c) {
+    Serial3.write(c);
 }
