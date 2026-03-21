@@ -1,9 +1,9 @@
 #pragma once
 #include <Arduino.h>
 
+#include "LineSensor.h"
 #include "MotorController.h"
 #include "UltrasonicSensor.h"
-#include "LineSensor.h"
 
 // MazeSolver directs a robot to solve a maze using the right-hand rule.
 class MazeSolver {

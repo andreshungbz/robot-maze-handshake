@@ -1,11 +1,11 @@
 #include <Arduino.h>
 
-#include "RGBLEDController.h"
-#include "MotorController.h"
-#include "UltrasonicSensor.h"
+#include "BLEController.h"
 #include "LineSensor.h"
 #include "MazeSolver.h"
-#include "BLEController.h"
+#include "MotorController.h"
+#include "RGBLEDController.h"
+#include "UltrasonicSensor.h"
 
 // Mode represents the configurations of the program.
 enum class Mode {
@@ -17,15 +17,15 @@ enum class Mode {
 
 constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{50};
 
-// Component initializations 
-RGBLEDController rgbLED{};
-MotorController motors{};
-UltrasonicSensor usSensor{};
-LineSensor lfSensor{};
+// Component initializations
 BLEController ble{};
+LineSensor lfs{};
+MotorController motors{};
+RGBLEDController rgbLED{};
+UltrasonicSensor us{};
 
 // MazeSolver initialization
-MazeSolver mazeSolver{motors, usSensor, lfSensor};
+MazeSolver mazeSolver{motors, us, lfs};
 
 // Toggle-able variables and their initial values
 Mode currentMode{Mode::MANUAL};
