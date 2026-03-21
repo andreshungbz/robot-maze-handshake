@@ -46,15 +46,16 @@ func main() {
 	}
 }
 
+// introduction displays project information and links.
 func introduction() {
 	const (
 		PURPLE = "\u001B[95m"
 		RESET  = "\u001B[0m"
 	)
 
-	fmt.Printf("%-35s %s\n", PURPLE+"[robot-bl-controller]"+RESET,
-		"Program for using a keyboard or game controller to send commands to the robot via BLE")
-	fmt.Printf("%-35s %s\n", PURPLE+"[Project Repository]"+RESET,
+	fmt.Printf("%-35s %s\n", PURPLE+"[robot-bt-controller]"+RESET,
+		"Program for using a keyboard or game controller to send commands to the robot via Bluetooth Low Energy (BLE)")
+	fmt.Printf("%-35s %s\n", PURPLE+"[GitHub Repository]"+RESET,
 		"https://github.com/andreshungbz/robot-maze-handshake")
 	fmt.Printf("%-35s %s\n", PURPLE+"[Project Subfolder]"+RESET,
 		"https://github.com/andreshungbz/robot-maze-handshake/tree/main/robot-bt-controller")

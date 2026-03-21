@@ -62,6 +62,7 @@ func main() {
 	}
 }
 
+// introduction displays project information and links.
 func introduction() {
 	const (
 		PURPLE = "\u001B[95m"
