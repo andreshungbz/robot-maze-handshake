@@ -20,7 +20,7 @@ help:
 # DEVELOPMENT
 # ==================================================================================== #
 
-## run: Run the cmp/detector application
+## run: Run the cmd/detector application
 .PHONY: run
 run:
 	go run ./cmd/detector
