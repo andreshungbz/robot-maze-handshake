@@ -28,22 +28,26 @@ func ConnectToBLEDevice(name string, timeout time.Duration) (*Client, error) {
 
 	log.Printf("[BLUETOOTH] Scanning for %s...\n", name)
 	done := make(chan struct{})
-	err := adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
-		if result.LocalName() == name {
-			deviceAddr = result.Address
-			log.Printf("[BLUETOOTH] Found %s (%s)!\n", name, deviceAddr.String())
-			adapter.StopScan()
-			close(done)
-		}
-	})
-	if err != nil {
-		return nil, err
-	}
+	var scanErr error
+	go func() {
+		scanErr = adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
+			if result.LocalName() == name {
+				deviceAddr = result.Address
+				adapter.StopScan()
+				close(done)
+			}
+		})
+	}()
 
 	select {
 	case <-done:
 	case <-time.After(timeout):
+		adapter.StopScan()
 		return nil, fmt.Errorf("[BLUETOOTH] %s Not Found — Timeout", name)
+	}
+
+	if scanErr != nil {
+		return nil, scanErr
 	}
 
 	// 3. Connect to the BLE Module
