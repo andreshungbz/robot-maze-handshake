@@ -2,7 +2,10 @@ module github.com/andreshungbz/robot-maze-handshake/robot-bt-controller
 
 go 1.26.1
 
-require tinygo.org/x/bluetooth v0.14.0
+require (
+	github.com/veandco/go-sdl2 v0.4.40
+	tinygo.org/x/bluetooth v0.14.0
+)
 
 require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -14,5 +17,5 @@ require (
 	github.com/tinygo-org/cbgo v0.0.4 // indirect
 	github.com/tinygo-org/pio v0.2.0 // indirect
 	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 )

@@ -30,6 +30,11 @@ run/keyboard:
 run/gamepad:
 	go run ./cmd/controller -mode=gamepad
 
+## run/test/gamepad-input: Run the cmd/gamepad-input program to test gamepad
+.PHONY: run/test/gamepad-input
+run/test/gamepad-input:
+	go run ./cmd/gamepad-input
+
 # ==================================================================================== #
 # QUALITY CONTROL
 # ==================================================================================== #
