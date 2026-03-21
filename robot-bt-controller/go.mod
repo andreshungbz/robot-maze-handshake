@@ -1,6 +1,6 @@
 module github.com/andreshungbz/robot-maze-handshake/robot-bt-controller
 
-go 1.26.1
+go 1.25.7
 
 require (
 	github.com/veandco/go-sdl2 v0.4.40
