@@ -5,7 +5,7 @@ A series of programs that allow a robot to navigate a maze using the right-hand 
 The following robots/kits are used in this project:
 
 - [Makeblock Ultimate 2.0 Robot Kit](https://support.makeblock.com/hc/en-us/sections/360001778514-Ultimate-2-0)
-- [DJI Tello Drone](https://www.ryzerobotics.com/tello)
+- [DJI Ryze Tello Drone](https://www.ryzerobotics.com/tello)
 
 ## Programs
 
