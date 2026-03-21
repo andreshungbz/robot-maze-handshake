@@ -53,8 +53,10 @@ func introduction() {
 	)
 
 	fmt.Printf("%-35s %s\n", PURPLE+"[robot-bl-controller]"+RESET,
-		"Program for connecting a game controller and sending commands to the robot.")
+		"Program for using a keyboard or game controller to send commands to the robot via BLE")
 	fmt.Printf("%-35s %s\n", PURPLE+"[Project Repository]"+RESET,
 		"https://github.com/andreshungbz/robot-maze-handshake")
+	fmt.Printf("%-35s %s\n", PURPLE+"[Project Subfolder]"+RESET,
+		"https://github.com/andreshungbz/robot-maze-handshake/tree/main/robot-bt-controller")
 	fmt.Println()
 }
