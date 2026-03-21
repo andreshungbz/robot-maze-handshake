@@ -1,35 +1,30 @@
 #include <Arduino.h>
 
 #include "BLEController.h"
+#include "CommandParser.h"
 #include "LineSensor.h"
 #include "MazeSolver.h"
 #include "MotorController.h"
 #include "RGBLEDController.h"
+#include "RobotMode.h"
 #include "UltrasonicSensor.h"
 
-// Mode represents the configurations of the program.
-enum class Mode {
-    MANUAL, // the robot is controlled via the robot-bt-controller program.
-    AUTONOMOUS // the robot navigates the maze automatically using the right-hand rule.
-};
+// Main Configuration
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{50}; // main loop delay
+RobotMode currentMode{RobotMode::MANUAL}; // starting mode
 
-// Mode Configuration
+// Object Initializations
 
-constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{50};
-
-// Component initializations
+// components
 BLEController ble{};
 LineSensor lfs{};
 MotorController motors{};
 RGBLEDController rgbLED{};
 UltrasonicSensor us{};
-
-// MazeSolver initialization
+// Maze Solver
 MazeSolver mazeSolver{motors, us, lfs};
-
-// Toggle-able variables and their initial values
-Mode currentMode{Mode::MANUAL};
-bool RGBLEDOn{false};
+// Command Parser
+CommandParser parser{rgbLED, motors, currentMode};
 
 void setup() {
     Serial.begin(9600); // debugging/monitoring
@@ -40,34 +35,20 @@ void setup() {
 
 void loop() {
     // [MANUAL] Mode
-    if (currentMode == Mode::MANUAL) {
+    if (currentMode == RobotMode::MANUAL) {
         // parse available BLE data
         if (ble.available()) {
             char cmd = ble.read();
-            switch (cmd) {
-                // RGB LED Toggle
-                case 'G':
-                    if (RGBLEDOn) {
-                        rgbLED.turnOff();
-                        Serial.println("[MANUAL]: RGB LED turned OFF");
-                    } else {
-                        rgbLED.setGreen();
-                        Serial.println("[MANUAL]: RGB LED set to GREEN");
-                    }
-                    RGBLEDOn = !RGBLEDOn;
-                    break;
+            Serial.print("[MANUAL] Received Command: ");
+            Serial.print(cmd);
+            Serial.println();
 
-                // [AUTONOMOUS] Mode
-                case 'A':
-                    currentMode = Mode::AUTONOMOUS;
-                    Serial.println("[robot-maze-solver] switched to [AUTONOMOUS] mode");
-                    break;
-            }
+            parser.parseCommand(cmd);
         }
     }
 
     // [AUTONOMOUS] Mode
-    else if (currentMode == Mode::AUTONOMOUS) {
+    else if (currentMode == RobotMode::AUTONOMOUS) {
         // continue maze navigation using the right-hand rule.
         mazeSolver.update();
 
