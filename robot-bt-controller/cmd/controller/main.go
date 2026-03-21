@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"log"
-	"log/slog"
-	"os"
 	"time"
 
 	"github.com/andreshungbz/robot-maze-handshake/robot-bt-controller/internal/ble"
@@ -14,22 +12,20 @@ import (
 
 func main() {
 	// parse mode flag
-	mode := flag.String("mode", "keyboard", "Program input mode (keyboard|gamepad)")
+	mode := flag.String("mode", "keyboard", "Program mode (keyboard|gamepad)")
 	flag.Parse()
 
-	// create logger and BLE Module client
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	// create BLE module client
 	client, err := ble.ConnectToBLEDevice(
 		config.BLE_MODULE_LOCAL_NAME,
 		10*time.Second,
-		logger,
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer client.Close()
 
-	// determine controller input based on flag and create Controller
+	// create Controller based on mode
 	var input controller.Input
 	switch *mode {
 	case "keyboard":
@@ -39,9 +35,9 @@ func main() {
 	default:
 		log.Fatal("Unsupported Mode")
 	}
-	ctrl := controller.New(client, input, logger)
+	ctrl := controller.New(client, input)
 
-	// run controller program, which runs controller.Input.Start
+	// run program
 	if err := ctrl.Run(); err != nil {
 		log.Fatal(err)
 	}

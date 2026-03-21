@@ -14,7 +14,7 @@ func (c *Client) Write(data []byte) (int, error) {
 	return c.txChar.WriteWithoutResponse(data)
 }
 
-// Close disconnects the BLE device.
+// Close disconnects the BT device.
 func (c *Client) Close() error {
 	return c.device.Disconnect()
 }

@@ -18,19 +18,19 @@ func (g *Gamepad) Start(out chan<- byte) {
 	}
 	defer sdl.Quit()
 	if sdl.NumJoysticks() < 1 {
-		log.Fatal("[GAMEPAD] No game controllers connected")
+		log.Fatal("[GAMEPAD] No Game Controllers Connected")
 	}
 
 	// open first controller
 	ctrl := sdl.GameControllerOpen(0)
 	if ctrl == nil {
-		log.Fatal("[GAMEPAD] Failed to open game controller")
+		log.Fatal("[GAMEPAD] Failed to Open Game Controller")
 	}
 	defer ctrl.Close()
-	log.Println("[GAMEPAD] Successfully connected to game controller!")
+	log.Println("[GAMEPAD] Successfully Connected to Game Controller!")
 
 	// display mode and available commands
-	g.printModeCommands(ctrl.Name())
+	g.printModeAndCommands(ctrl.Name())
 
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -88,8 +88,8 @@ func (g *Gamepad) Start(out chan<- byte) {
 	}
 }
 
-// printModeCommands prints the mode, controller name, and available commands.
-func (g *Gamepad) printModeCommands(name string) {
+// printModeAndCommands prints the mode, controller name, and available commands.
+func (g *Gamepad) printModeAndCommands(name string) {
 	log.Printf("[GAMEPAD MODE - %s] [Available Commands]\n", name)
 	for _, input := range commands.GamepadOrder {
 		key := commands.GamepadMap[input]

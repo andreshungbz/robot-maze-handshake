@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log/slog"
+	"log"
 
 	"github.com/andreshungbz/robot-maze-handshake/robot-bt-controller/internal/ble"
 )
@@ -11,19 +11,17 @@ type Input interface {
 	Start(chan<- byte)
 }
 
-// Controller combines ble.Client, Input, and a logger.
+// Controller combines ble.Client and Input.
 type Controller struct {
 	client *ble.Client
 	input  Input
-	logger *slog.Logger
 }
 
 // New is a "constructor" function for Controller.
-func New(client *ble.Client, input Input, logger *slog.Logger) *Controller {
+func New(client *ble.Client, input Input) *Controller {
 	return &Controller{
 		client: client,
 		input:  input,
-		logger: logger,
 	}
 }
 
@@ -40,14 +38,11 @@ func (c *Controller) Run() error {
 	for cmd := range cmdCh {
 		n, err := c.client.Write([]byte{cmd})
 		if err != nil {
-			c.logger.Error("Write Failed", "err", err)
+			log.Fatalf("[CONTROLLER] Write Failed: %v", err)
 			continue
 		}
 
-		c.logger.Info("Command Sent",
-			"cmd", string(cmd),
-			"bytes", n,
-		)
+		log.Printf("[CONTROLLER] Command Sent: %s (%d bytes)", string(cmd), n)
 	}
 
 	return nil
