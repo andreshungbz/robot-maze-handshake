@@ -29,11 +29,13 @@ func main() {
 	}
 	defer client.Close()
 
-	// determine controller input based on flag and create Controller with that input
+	// determine controller input based on flag and create Controller
 	var input controller.Input
 	switch *mode {
 	case "keyboard":
 		input = &controller.Keyboard{}
+	case "gamepad":
+		input = &controller.Gamepad{}
 	default:
 		log.Fatal("Unsupported Mode")
 	}
