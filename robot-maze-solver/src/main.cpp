@@ -41,7 +41,7 @@ void loop() {
     if (currentMode == RobotMode::MANUAL) {
         // parse available BLE data
         if (ble.available()) {
-            char cmd = ble.read();
+            char cmd{ble.read()};
             Serial.print("[MANUAL] Received Command: ");
             Serial.print(cmd);
             Serial.println();

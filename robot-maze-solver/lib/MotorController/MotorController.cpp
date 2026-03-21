@@ -5,8 +5,7 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 
 // Public Methods
 
-void MotorController::driveForwardWithCorrection(
-    uint16_t distanceCm, uint16_t target, uint16_t correction) {
+void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, uint16_t correction) {
     if (distanceCm > target + 1) {
         // if too far from the wall, steer right
         drive(BASE_SPEED + correction, BASE_SPEED - correction);
