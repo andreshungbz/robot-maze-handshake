@@ -20,10 +20,15 @@ help:
 # DEVELOPMENT
 # ==================================================================================== #
 
-## run: Run the cmd/controller application
-.PHONY: run
-run:
-	go run ./cmd/controller
+## run/keyboard: Run the cmd/controller application in keyboard mode
+.PHONY: run/keyboard
+run/keyboard:
+	go run ./cmd/controller -mode=keyboard
+
+## run/gamepad: Run the cmd/controller application in gamepad mode
+.PHONY: run/gamepad
+run/gamepad:
+	go run ./cmd/controller -mode=gamepad
 
 # ==================================================================================== #
 # QUALITY CONTROL

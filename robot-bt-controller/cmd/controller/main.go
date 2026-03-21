@@ -1,88 +1,46 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
+	"flag"
+	"log"
+	"log/slog"
 	"os"
 	"time"
 
-	"tinygo.org/x/bluetooth"
+	"github.com/andreshungbz/robot-maze-handshake/robot-bt-controller/internal/ble"
+	"github.com/andreshungbz/robot-maze-handshake/robot-bt-controller/internal/config"
+	"github.com/andreshungbz/robot-maze-handshake/robot-bt-controller/internal/controller"
 )
 
-var adapter = bluetooth.DefaultAdapter
-
 func main() {
-	fmt.Println("Starting BLE Adapter controller...")
-	err := adapter.Enable();
-	if  err != nil {
-		panic("failed to enable BLE adapter: " + err.Error())
-	}
+	// parse mode flag
+	mode := flag.String("mode", "keyboard", "Program input mode (keyboard|gamepad)")
+	flag.Parse()
 
-	var robotAddr bluetooth.Address
-	bleModuleName := "Makeblock_LE703e97eeb26f"
-
-	done := make(chan struct{})
-	fmt.Println("Scanning for robot BLE...")
-	adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
-		if result.LocalName() == bleModuleName {
-			robotAddr = result.Address
-			fmt.Printf("Found robot: %s [%s]\n", bleModuleName, robotAddr.String())
-			adapter.StopScan()
-			close(done)
-		}
-	})
-	select {
-	case <-done:
-	case <-time.After(10 * time.Second):
-		fmt.Println("Robot not found — exiting")
-		return
-	}
-
-	fmt.Println("Connecting...")
-	device, err := adapter.Connect(robotAddr, bluetooth.ConnectionParams{})
+	// create logger and BLE Module client
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	client, err := ble.ConnectToBLEDevice(
+		config.BLE_MODULE_LOCAL_NAME,
+		10*time.Second,
+		logger,
+	)
 	if err != nil {
-		panic("failed to connect: " + err.Error())
+		log.Fatal(err)
 	}
-	defer device.Disconnect()
-	fmt.Println("Connected!")
+	defer client.Close()
 
-	// Discover all services and look specifically for FFE1 -> FFE2/FFE3
-	var txChar, rxChar bluetooth.DeviceCharacteristic
-	services, _ := device.DiscoverServices(nil)
-	for _, svc := range services {
-		if svc.UUID().String() == "0000ffe1-0000-1000-8000-00805f9b34fb" {
-			chars, _ := svc.DiscoverCharacteristics(nil)
-			for _, c := range chars {
-				uuid := c.UUID().String()
-				switch uuid {
-				case "0000ffe2-0000-1000-8000-00805f9b34fb":
-					rxChar = c // notify from robot
-				case "0000ffe3-0000-1000-8000-00805f9b34fb":
-					txChar = c // write to robot
-				}
-			}
-		}
+	// determine controller input based on flag and create Controller with that input
+	var input controller.Input
+	switch *mode {
+	case "keyboard":
+		input = &controller.Keyboard{}
+	default:
+		log.Fatal("Unsupported Mode")
 	}
+	ctrl := controller.New(client, input, logger)
 
-	if txChar.UUID() == (bluetooth.UUID{}) || rxChar.UUID() == (bluetooth.UUID{}) {
-		panic("BLE UART characteristics FFE2/FFE3 not found")
-	}
-
-	fmt.Println("Ready! Type a character to send (will go to FFE3)...")
-
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("> ")
-		text, _ := reader.ReadString('\n')
-		if len(text) == 0 {
-			continue
-		}
-		b := []byte{text[0]}
-		n, err := txChar.WriteWithoutResponse(b)
-		if err != nil {
-			fmt.Println("Write failed:", err)
-		} else {
-			fmt.Printf("Sent %d bytes to FFE3: %c\n", n, text[0])
-		}
+	// run controller program, which runs controller.Input.Start
+	if err := ctrl.Run(); err != nil {
+		log.Fatal(err)
 	}
 }
