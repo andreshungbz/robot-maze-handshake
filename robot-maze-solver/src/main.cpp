@@ -65,7 +65,7 @@ void loop() {
         // continue maze navigation using the right-hand rule.
         mazeSolver.update();
 
-        // if the final point is achieved, turn on RGB LED and stop motors indefinitely
+        // if the final point is achieved, turn on RGB LED and switch back to [MANUAL] mode
         if (mazeSolver.isGoalReached()) {
             motors.stop();
             rgbLED.setGreen();
