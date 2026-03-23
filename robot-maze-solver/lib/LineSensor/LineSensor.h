@@ -11,11 +11,11 @@ public:
 
 private:
     // consecutiveDetections is a stability counter to filter noisy readings.
-    int consecutiveDetections{0};
+    int consecutiveDetections{ 0 };
 
     // LineSensor Configuration
 
     // DETECTION_THRESHOLD represents the number of consecutive valid readings
     // are needed before confirming isWallAhead().
-    static constexpr int DETECTION_THRESHOLD{3};
+    static constexpr int DETECTION_THRESHOLD{ 3 };
 };

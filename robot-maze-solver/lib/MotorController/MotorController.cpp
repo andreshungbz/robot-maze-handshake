@@ -9,10 +9,12 @@ void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t t
     if (distanceCm > target + 1) {
         // if too far from the wall, steer right
         drive(BASE_SPEED + correction, BASE_SPEED - correction);
-    } else if (distanceCm < target - 1) {
+    }
+    else if (distanceCm < target - 1) {
         // if too close to the wall, steer left
         drive(BASE_SPEED - correction, BASE_SPEED + correction);
-    } else {
+    }
+    else {
         // if at designated distance from the wall, move forward
         driveForward();
     }

@@ -10,7 +10,8 @@ class CommandParser {
 public:
     // constructor
     CommandParser(RGBLEDController& led, MotorController& motors, RobotMode& mode)
-        : rgbLED(led), motors(motors), currentMode(mode), RGBLEDOn(false) {}
+        : rgbLED(led), motors(motors), currentMode(mode), RGBLEDOn(false) {
+    }
 
     // parseCommand examines commands and activates the appropriate module or motors.
     void parseCommand(char cmd);

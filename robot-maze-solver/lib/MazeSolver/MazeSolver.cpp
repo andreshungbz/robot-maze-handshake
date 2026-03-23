@@ -1,14 +1,15 @@
 #include "MazeSolver.h"
 
 MazeSolver::MazeSolver(MotorController& motors, UltrasonicSensor& usSensor, LineSensor& lineSensor)
-    : motors(motors), usSensor(usSensor), lfSensor(lineSensor) {}
+    : motors(motors), usSensor(usSensor), lfSensor(lineSensor) {
+}
 
 void MazeSolver::update() {
     if (reachedGoal) return;
 
-    uint16_t rightDistance{usSensor.getDistanceCm()};
-    bool rightWallDetected{rightDistance < RIGHT_OPEN_THRESHOLD};
-    bool frontWallDetected{lfSensor.isWallAhead()};
+    uint16_t rightDistance{ usSensor.getDistanceCm() };
+    bool rightWallDetected{ rightDistance < RIGHT_OPEN_THRESHOLD };
+    bool frontWallDetected{ lfSensor.isWallAhead() };
 
     // 1. RIGHT=OPEN: turn right
     if (!rightWallDetected) {
@@ -24,7 +25,8 @@ void MazeSolver::update() {
             // increment right-wall event if right sensor detects wall
             if (rightWallDetected) {
                 ++rightWallEventCounter;
-            } else {
+            }
+            else {
                 rightWallEventCounter = 0; // reset right wall check counter
             }
 
@@ -61,7 +63,7 @@ void MazeSolver::update() {
 }
 
 bool MazeSolver::isGoalReached() const {
-    return reachedGoal; 
+    return reachedGoal;
 }
 
 // Helper Methods

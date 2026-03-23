@@ -10,8 +10,8 @@
 #include "UltrasonicSensor.h"
 
 // Main Configuration
-constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{50}; // main loop delay
-RobotMode currentMode{RobotMode::MANUAL}; // starting mode
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 50 }; // main loop delay
+RobotMode currentMode{ RobotMode::MANUAL };               // starting mode
 
 // Object Initializations
 
@@ -22,15 +22,15 @@ MotorController motors{};
 RGBLEDController rgbLED{};
 UltrasonicSensor us{};
 // higher-level objects
-MazeSolver mazeSolver{motors, us, lfs};
-CommandParser parser{rgbLED, motors, currentMode};
+MazeSolver mazeSolver{ motors, us, lfs };
+CommandParser parser{ rgbLED, motors, currentMode };
 
 // forward declaration for introduction
 void introduction();
 
 void setup() {
     Serial.begin(9600); // debugging/monitoring
-    ble.begin(115200); // Makeblock BLEV1.0_Z module
+    ble.begin(115200);  // Makeblock BLEV1.0_Z module
 
     introduction();
 }
@@ -40,7 +40,7 @@ void loop() {
     if (currentMode == RobotMode::MANUAL) {
         // parse available BLE data
         if (ble.available()) {
-            char cmd{ble.read()};
+            char cmd{ ble.read() };
             Serial.print("[MANUAL] Received Command: ");
             Serial.print(cmd);
             Serial.println();
@@ -53,7 +53,7 @@ void loop() {
     else if (currentMode == RobotMode::AUTONOMOUS) {
         // check for [MANUAL] mode override (input of 'M')
         if (ble.available()) {
-            char cmd{ble.read()};
+            char cmd{ ble.read() };
             if (cmd == 'M') {
                 motors.stop();
                 currentMode = RobotMode::MANUAL;
@@ -81,7 +81,7 @@ void loop() {
 // introduction displays project information and links.
 void introduction() {
     const char* PURPLE = "\x1B[95m";
-    const char* RESET  = "\x1B[0m";
+    const char* RESET = "\x1B[0m";
 
     Serial.print(PURPLE);
     Serial.print("[robot-maze-solver]");
