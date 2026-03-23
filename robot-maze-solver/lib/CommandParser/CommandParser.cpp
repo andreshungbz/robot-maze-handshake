@@ -57,6 +57,11 @@ void CommandParser::parseCommand(char cmd) {
             Serial.println("[MANUAL] Switching to [AUTONOMOUS] mode...");
             break;
 
+        // Redundancy message for [MANUAL] Mode
+        case 'M':
+            Serial.println("[MANUAL] Already in [MANUAL] mode");
+            break;
+
         default:
             Serial.println("[MANUAL] Unknown Command");
     }

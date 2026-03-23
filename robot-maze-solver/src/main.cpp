@@ -52,16 +52,27 @@ void loop() {
 
     // [AUTONOMOUS] Mode
     else if (currentMode == RobotMode::AUTONOMOUS) {
+        // check for [MANUAL] mode override (input of 'M')
+        if (ble.available()) {
+            char cmd{ble.read()};
+            if (cmd == 'M') {
+                motors.stop();
+                currentMode = RobotMode::MANUAL;
+                Serial.println("[AUTONOMOUS] Overriding to [MANUAL] mode");
+                return;
+            }
+        }
+
         // continue maze navigation using the right-hand rule.
         mazeSolver.update();
 
         // if the final point is achieved, turn on RGB LED and stop motors indefinitely
         if (mazeSolver.isGoalReached()) {
-            rgbLED.setGreen();
             motors.stop();
-
-            Serial.println("[AUTONOMOUS] Goal reached! Robot stopped.");
-            while (true) delay(1000);
+            rgbLED.setGreen();
+            currentMode = RobotMode::MANUAL;
+            Serial.println("[AUTONOMOUS] Goal reached! Switching to [MANUAL] mode");
+            return;
         }
     }
 
