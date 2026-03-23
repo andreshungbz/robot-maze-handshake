@@ -59,6 +59,8 @@ func (g *Gamepad) Start(out chan<- byte) {
 					out <- commands.CommandMap['R'].Code
 				case "start":
 					out <- commands.CommandMap['A'].Code
+				case "back":
+					out <- commands.CommandMap['M'].Code
 				default:
 					continue
 				}
