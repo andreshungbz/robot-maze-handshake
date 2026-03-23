@@ -33,6 +33,14 @@ func (c *Controller) Run() error {
 	// run Start in a goroutine
 	go c.input.Start(cmdCh)
 
+	// subscribe to notifications from the BLE device
+	err := c.client.Subscribe(func(data []byte) {
+		log.Printf("[ROBOT BLE RX] %s", string(data))
+	})
+	if err != nil {
+		log.Fatalf("[CONTROLLER] Subscribe Failed: %v", err)
+	}
+
 	// continuously read command values from the channel and send
 	// them to the BLE device
 	for cmd := range cmdCh {

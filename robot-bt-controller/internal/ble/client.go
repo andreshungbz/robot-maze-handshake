@@ -14,6 +14,13 @@ func (c *Client) Write(data []byte) (int, error) {
 	return c.txChar.WriteWithoutResponse(data)
 }
 
+// Subscribe reads data from the receive characteristic of the BLE device.
+func (c *Client) Subscribe(handler func([]byte)) error {
+	return c.rxChar.EnableNotifications(func(buf []byte) {
+		handler(buf)
+	})
+}
+
 // Close disconnects the BT device.
 func (c *Client) Close() error {
 	return c.device.Disconnect()

@@ -16,6 +16,7 @@ var CommandMap = map[byte]Command{
 	'R': {Code: 'R', Action: "Turn robot 90 degrees to the right"},
 	'1': {Code: '1', Action: "Pivot robot to the left"},
 	'2': {Code: '2', Action: "Pivot robot to the right"},
+	'S': {Code: 'S', Action: "Stops the robot"},
 	'A': {Code: 'A', Action: "Enable AUTONOMOUS mode on robot"},
 	'M': {Code: 'M', Action: "Switch to MANUAL mode on robot"},
 }
@@ -36,8 +37,8 @@ var KeyboardOrder = []byte{
 // GamepadMap maps a controller input to a command key.
 var GamepadMap = map[string]byte{
 	"x":             'X',
-	"dpup":          'F',
-	"dpdown":        'B',
+	"a":             'F',
+	"b":             'B',
 	"leftshoulder":  'L',
 	"rightshoulder": 'R',
 	"lefttrigger":   '1',
@@ -49,8 +50,8 @@ var GamepadMap = map[string]byte{
 // GamepadDisplay maps the event button/axis name to a prettier name.
 var GamepadDisplay = map[string]string{
 	"x":             "X Button",
-	"dpup":          "D-Pad Up",
-	"dpdown":        "D-Pad Down",
+	"a":             "A Button",
+	"b":             "B Button",
 	"leftshoulder":  "Left Shoulder",
 	"rightshoulder": "Right Shoulder",
 	"lefttrigger":   "Left Trigger",
@@ -62,8 +63,8 @@ var GamepadDisplay = map[string]string{
 // GamepadOrder defines the display order of commands for gamepad mode.
 var GamepadOrder = []string{
 	"x",
-	"dpup",
-	"dpdown",
+	"a",
+	"b",
 	"leftshoulder",
 	"rightshoulder",
 	"lefttrigger",

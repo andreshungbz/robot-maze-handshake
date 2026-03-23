@@ -38,55 +38,78 @@ func (g *Gamepad) Start(out chan<- byte) {
 
 			// Button Events
 			case *sdl.ControllerButtonEvent:
-				// check only for pressed state
-				if e.State != sdl.PRESSED {
-					continue
-				}
-
 				// get button name and send appropriate command
 				btn := sdl.GameControllerButton(e.Button)
 				name := sdl.GameControllerGetStringForButton(btn)
 				switch name {
 				case "x":
-					out <- commands.CommandMap['X'].Code
-				case "dpup":
-					out <- commands.CommandMap['F'].Code
-				case "dpdown":
-					out <- commands.CommandMap['B'].Code
+					if e.State == sdl.PRESSED {
+						out <- commands.CommandMap['X'].Code
+					}
+
+				case "a":
+					switch e.State {
+					case sdl.PRESSED:
+						out <- commands.CommandMap['F'].Code
+					case sdl.RELEASED:
+						out <- commands.CommandMap['S'].Code
+					}
+
+				case "b":
+					switch e.State {
+					case sdl.PRESSED:
+						out <- commands.CommandMap['B'].Code
+					case sdl.RELEASED:
+						out <- commands.CommandMap['S'].Code
+					}
+
 				case "leftshoulder":
-					out <- commands.CommandMap['L'].Code
+					if e.State == sdl.PRESSED {
+						out <- commands.CommandMap['L'].Code
+					}
+
 				case "rightshoulder":
-					out <- commands.CommandMap['R'].Code
+					if e.State == sdl.PRESSED {
+						out <- commands.CommandMap['R'].Code
+					}
+
 				case "start":
-					out <- commands.CommandMap['A'].Code
+					if e.State == sdl.PRESSED {
+						out <- commands.CommandMap['A'].Code
+					}
+
 				case "back":
-					out <- commands.CommandMap['M'].Code
+					if e.State == sdl.PRESSED {
+						out <- commands.CommandMap['M'].Code
+					}
+
 				default:
 					continue
 				}
 
 			// Axis Events
 			case *sdl.ControllerAxisEvent:
-				// check value threshold for triggers
-				if e.Value < 20000 {
-					continue
-				}
-
-				// get axis name and sent appropriate command
 				axis := sdl.GameControllerAxis(e.Axis)
-				name := sdl.GameControllerGetStringForAxis(axis)
-				switch name {
-				case "lefttrigger":
-					out <- commands.CommandMap['1'].Code
-				case "righttrigger":
-					out <- commands.CommandMap['2'].Code
-				default:
-					continue
+				value := e.Value
+
+				switch axis {
+				case sdl.CONTROLLER_AXIS_TRIGGERLEFT:
+					if value > 20000 {
+						out <- commands.CommandMap['1'].Code
+					} else {
+						out <- commands.CommandMap['S'].Code
+					}
+				case sdl.CONTROLLER_AXIS_TRIGGERRIGHT:
+					if value > 20000 {
+						out <- commands.CommandMap['2'].Code
+					} else {
+						out <- commands.CommandMap['S'].Code
+					}
 				}
 			}
 		}
 
-		sdl.Delay(20)
+		sdl.Delay(50)
 	}
 }
 
