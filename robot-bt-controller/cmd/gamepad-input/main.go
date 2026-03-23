@@ -66,7 +66,7 @@ func main() {
 func introduction() {
 	const (
 		BLUE  = "\u001B[94m"
-		RESET  = "\u001B[0m"
+		RESET = "\u001B[0m"
 	)
 
 	fmt.Printf("%-35s %s\n", BLUE+"[gamepad-input]"+RESET,
