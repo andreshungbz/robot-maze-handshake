@@ -42,14 +42,20 @@ void CommandParser::parseCommand(char cmd) {
 
         // Pivot Left Gradually
     case '1':
-        motors.pivotLeft(125);
+        motors.pivotLeft(motors.BASE_SPEED);
         Serial.println("[MANUAL] Pivot left gradually");
         break;
 
         // Pivot Right Gradually
     case '2':
-        motors.pivotRight(125);
+        motors.pivotRight(motors.BASE_SPEED);
         Serial.println("[MANUAL] Pivot right gradually");
+        break;
+
+        // Stop
+    case 'S':
+        motors.stop();
+        Serial.println("[MANUAL] Stop motors");
         break;
 
         // Switch to [AUTONOMOUS] Mode

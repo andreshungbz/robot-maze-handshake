@@ -10,7 +10,7 @@
 #include "UltrasonicSensor.h"
 
 // Main Configuration
-constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 50 }; // main loop delay
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 25 }; // main loop delay
 RobotMode currentMode{ RobotMode::MANUAL };               // starting mode
 
 // Object Initializations
@@ -39,11 +39,14 @@ void loop() {
     // [MANUAL] Mode
     if (currentMode == RobotMode::MANUAL) {
         // parse available BLE data
-        if (ble.available()) {
+        while (ble.available()) {
             char cmd{ ble.read() };
             Serial.print("[MANUAL] Received Command: ");
             Serial.print(cmd);
             Serial.println();
+
+            // echo command back (debugging)
+            ble.write(cmd);
 
             parser.parseCommand(cmd);
         }
