@@ -15,15 +15,14 @@ RobotMode currentMode{RobotMode::MANUAL}; // starting mode
 
 // Object Initializations
 
-// components
+// lower-level objects
 BLEController ble{};
 LineSensor lfs{};
 MotorController motors{};
 RGBLEDController rgbLED{};
 UltrasonicSensor us{};
-// Maze Solver
+// higher-level objects
 MazeSolver mazeSolver{motors, us, lfs};
-// Command Parser
 CommandParser parser{rgbLED, motors, currentMode};
 
 // forward declaration for introduction
