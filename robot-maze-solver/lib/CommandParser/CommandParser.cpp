@@ -18,13 +18,13 @@ void CommandParser::parseCommand(char cmd) {
 
         // Drive Forward
     case 'F':
-        motors.driveForward(motors.BASE_SPEED);
+        motors.driveForward(motors.BASE_SPEED + 25);
         Serial.println("[MANUAL] Moving forward");
         break;
 
         // Drive Backwards
     case 'B':
-        motors.driveBackward(motors.BASE_SPEED);
+        motors.driveBackward(motors.BASE_SPEED + 25);
         Serial.println("[MANUAL] Moving backward");
         break;
 
@@ -42,13 +42,13 @@ void CommandParser::parseCommand(char cmd) {
 
         // Pivot Left Gradually
     case '1':
-        motors.pivotLeft(motors.BASE_SPEED);
+        motors.pivotLeft(motors.BASE_SPEED - 75);
         Serial.println("[MANUAL] Pivot left gradually");
         break;
 
         // Pivot Right Gradually
     case '2':
-        motors.pivotRight(motors.BASE_SPEED);
+        motors.pivotRight(motors.BASE_SPEED - 75);
         Serial.println("[MANUAL] Pivot right gradually");
         break;
 
