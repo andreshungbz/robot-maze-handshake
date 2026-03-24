@@ -15,12 +15,12 @@ type Keyboard struct{}
 // Start continuously reads commands from standard input and sends appropriate commands to Controller.
 func (k *Keyboard) Start(out chan<- byte) {
 	reader := bufio.NewReader(os.Stdin)
-	for {
-		// display mode and available commands
-		k.printModeAndCommands()
 
+	// display mode and available commands
+	k.printModeAndCommands()
+
+	for {
 		// read input
-		log.Printf("[KEYBOARD] Command: ")
 		text, err := reader.ReadString('\n')
 		if err != nil {
 			log.Fatalf("[KEYBOARD] Error Reading Input: %v", err)

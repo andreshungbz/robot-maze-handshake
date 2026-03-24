@@ -30,6 +30,7 @@ var KeyboardOrder = []byte{
 	'R',
 	'1',
 	'2',
+	'S',
 	'A',
 	'M',
 }
