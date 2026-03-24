@@ -23,12 +23,22 @@
           default = pkgs.mkShell {
             buildInputs = [
               pkgs.go
+              pkgs.gotests
+              pkgs.gopls
+              pkgs.impl
+              pkgs.delve
+              pkgs.gotools
+              pkgs.gnumake
               pkgs.pkg-config
               pkgs.opencv
               pkgs.zsh
             ];
 
             shellHook = ''
+              export CGO_CFLAGS="-U_FORTIFY_SOURCE"
+              export CGO_CPPFLAGS="-U_FORTIFY_SOURCE"
+              export CGO_LDFLAGS=""
+
               if [ -z "$ZSH_VERSION" ]; then
                 export SHELL=${pkgs.zsh}/bin/zsh
                 exec ${pkgs.zsh}/bin/zsh -l
