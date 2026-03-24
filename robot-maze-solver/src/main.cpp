@@ -83,23 +83,8 @@ void loop() {
 
 // introduction displays project information and links.
 void introduction() {
-    const char* PURPLE = "\x1B[95m";
-    const char* RESET = "\x1B[0m";
-
-    Serial.print(PURPLE);
-    Serial.print("[robot-maze-solver]");
-    Serial.print(RESET);
-    Serial.println("Program that navigates a robot through a maze using the right-hand rule (or manually)");
-
-    Serial.print(PURPLE);
-    Serial.print("[GitHub Repository]");
-    Serial.print(RESET);
-    Serial.println(" https://github.com/andreshungbz/robot-maze-handshake");
-
-    Serial.print(PURPLE);
-    Serial.print("[Project Subfolder]");
-    Serial.print(RESET);
-    Serial.println(" https://github.com/andreshungbz/robot-maze-handshake/tree/main/robot-maze-solver");
-
+    Serial.println("[robot-maze-solver] Program that navigates a robot through a maze using the right-hand rule (or manually)");
+    Serial.println("[GitHub Repository] https://github.com/andreshungbz/robot-maze-handshake");
+    Serial.println("[Project Subfolder] https://github.com/andreshungbz/robot-maze-handshake/tree/main/robot-maze-solver");
     Serial.println();
 }
