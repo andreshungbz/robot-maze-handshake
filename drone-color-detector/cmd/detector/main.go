@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"runtime"
 	"time"
 
 	"gocv.io/x/gocv"
 )
 
 func main() {
+	runtime.LockOSThread()
 	introduction()
 
 	log.Printf("gocv version: %s\n", gocv.Version())
@@ -32,6 +36,32 @@ func main() {
 
 	// Enter SDK mode
 	sendCommand(conn, "command")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	go func() {
+		<-c
+		fmt.Println("\nInterrupt received, stopping stream...")
+		sendCommand(conn, "streamoff")
+		os.Exit(0)
+	}()
+
+	// send battery check
+	_, err = conn.Write([]byte("battery?"))
+	if err != nil {
+		log.Fatalf("Failed to send battery check: %v", err)
+	}
+
+	// read response
+	buffer := make([]byte, 1024)
+	conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	n, _, err := conn.ReadFromUDP(buffer)
+	if err != nil {
+		log.Fatalf("Failed to read battery response: %v", err)
+	}
+
+	fmt.Printf("Drone battery: %s%%\n", string(buffer[:n]))
 
 	// Start video stream
 	sendCommand(conn, "streamon")
