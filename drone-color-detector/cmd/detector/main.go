@@ -61,7 +61,16 @@ func main() {
 
 		// on detection of green, execute preprogrammed commands
 		if greenDetected {
-			log.Println("[VISION] Green detected! Executing command sequence!")
+			log.Println("[VISION] Green detected!")
+
+			// close drone video stream and window
+			log.Println("[HOST] Stopping video stream before command sequence...")
+			if err := d.StreamOff(); err != nil {
+				log.Printf("[HOST] Failed to stop stream: %v", err)
+			}
+			vw.Close()
+
+			log.Println("[HOST] Executing command sequence!")
 
 			time.Sleep(500 * time.Millisecond)
 			drone.ExecuteSequence(d) // comment-able when debugging
@@ -71,6 +80,8 @@ func main() {
 			break
 		}
 	}
+
+	time.Sleep(1 * time.Second)
 }
 
 // introduction displays project information and links.
