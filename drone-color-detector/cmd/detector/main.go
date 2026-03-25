@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/andreshungbz/robot-maze-handshake/drone-color-detector/internal/config"
 	"github.com/andreshungbz/robot-maze-handshake/drone-color-detector/internal/drone"
 	"github.com/andreshungbz/robot-maze-handshake/drone-color-detector/internal/vision"
 )
@@ -18,7 +19,7 @@ func main() {
 	introduction()
 
 	// connect to the drone and handle interrupts
-	d, err := drone.Connect("192.168.10.1:8889")
+	d, err := drone.Connect(config.TELLO_CMD_RESP_ADDRESS)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +38,7 @@ func main() {
 	defer d.StreamOff()
 
 	// create a vision.VideoWindow to monitor the drone video stream
-	vw, err := vision.NewVideoWindow("udp://@0.0.0.0:11111", "Tello Video")
+	vw, err := vision.NewVideoWindow(config.TELLO_VIDEO_STREAM_ADDRESS, "Tello Video")
 	if err != nil {
 		log.Fatalf("[HOST] Failed to open video window: %v", err)
 	}
