@@ -65,7 +65,7 @@ func DetectGreen(img *gocv.Mat) bool {
 	gocv.CvtColor(*img, &hsv, gocv.ColorBGRToHSV)
 
 	// HSV color ranges to detect green
-	lower := gocv.NewScalar(30, 50, 50, 0)
+	lower := gocv.NewScalar(30, 200, 150, 0)
 	upper := gocv.NewScalar(90, 255, 255, 0)
 
 	// create a binary mask for the pixel range (in range becomes white, not in range becomes black)
@@ -87,7 +87,7 @@ func DetectGreen(img *gocv.Mat) bool {
 		}
 
 		// draw rectangle on video frame after meeting a threshold
-		if area > 100.0 {
+		if area > 0.0 {
 			rect := gocv.BoundingRect(contours.At(i))
 			gocv.Rectangle(img, rect, color.RGBA{0, 255, 0, 0}, 2)
 		}
@@ -99,5 +99,5 @@ func DetectGreen(img *gocv.Mat) bool {
 	}
 
 	// return threshold comparison
-	return maxArea > 200
+	return maxArea > 150
 }
