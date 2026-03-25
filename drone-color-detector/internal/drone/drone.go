@@ -48,7 +48,7 @@ func (d *Drone) SendCommand(cmd string) error {
 	}
 
 	// read response with timeout
-	d.conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	d.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	buf := make([]byte, 1024)
 	n, _, err := d.conn.ReadFromUDP(buf)
 	if err != nil {
@@ -185,21 +185,15 @@ func ExecuteSequence(d *Drone) {
 		return
 	}
 
-	time.Sleep(2 * time.Second)
-
 	if err := d.Flip("f"); err != nil {
 		log.Println(err)
 		return
 	}
 
-	time.Sleep(2 * time.Second)
-
-	if err := d.Forward(100); err != nil {
+	if err := d.Forward(20); err != nil {
 		log.Println(err)
 		return
 	}
-
-	time.Sleep(2 * time.Second)
 
 	if err := d.Land(); err != nil {
 		log.Println(err)
