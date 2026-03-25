@@ -7,7 +7,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// VideoWindow manages a capture and display window.
+// VideoWindow bundles the video capture, video window, and current video frame.
 type VideoWindow struct {
 	Capture *gocv.VideoCapture // video source
 	Window  *gocv.Window       // on-screen video display
@@ -16,7 +16,7 @@ type VideoWindow struct {
 
 // NewVideoWindow creates a new VideoWindow for a given URL and title.
 func NewVideoWindow(url string, title string) (*VideoWindow, error) {
-	// create VideoCapture
+	// create video source
 	cap, err := gocv.VideoCaptureFile(url)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,6 @@ func NewVideoWindow(url string, title string) (*VideoWindow, error) {
 
 // ReadFrame reads the next video frame.
 func (vw *VideoWindow) ReadFrame() (gocv.Mat, bool) {
-	// get next video frame
 	if ok := vw.Capture.Read(&vw.img); !ok || vw.img.Empty() {
 		return vw.img, false
 	}
@@ -42,15 +41,25 @@ func (vw *VideoWindow) ReadFrame() (gocv.Mat, bool) {
 	return vw.img, true
 }
 
-// Display renders the video frame on the window and processes GUI events.
+// Display renders a video frame on the window.
 func (vw *VideoWindow) Display(img gocv.Mat) {
 	vw.Window.IMShow(img)
-	vw.Window.WaitKey(1)
+	vw.Window.WaitKey(1) // processes GUI events
 }
 
-// DetectGreen checks if green is present in a frame and logs pixel count.
+// Close releases all created OpenCV resources.
+func (vw *VideoWindow) Close() {
+	vw.Capture.Close()
+	vw.Window.Close()
+	vw.img.Close()
+}
+
+// DETECTION FUNCTIONS
+
+// DetectGreen checks if green is present in a frame, drawing a rectangle on the frame if
+// the determined area reaches a threshold and logging the largest area determined.
 func DetectGreen(img *gocv.Mat) bool {
-	// convert BGR (format from Tello video frame) to HSV for better color detection
+	// convert BGR (Tello video frame format) to HSV for better color detection
 	hsv := gocv.NewMat()
 	defer hsv.Close()
 	gocv.CvtColor(*img, &hsv, gocv.ColorBGRToHSV)
@@ -59,27 +68,26 @@ func DetectGreen(img *gocv.Mat) bool {
 	lower := gocv.NewScalar(30, 50, 50, 0)
 	upper := gocv.NewScalar(90, 255, 255, 0)
 
-	// create a binary mask such that pixels in range become white, with the rest becoming black
+	// create a binary mask for the pixel range (in range becomes white, not in range becomes black)
 	mask := gocv.NewMat()
 	defer mask.Close()
 	gocv.InRangeWithScalar(hsv, lower, upper, &mask)
 
-	// get pixel contours
+	// get pixel contours from mask
 	contours := gocv.FindContours(mask, gocv.RetrievalExternal, gocv.ChainApproxSimple)
 	defer contours.Close()
 
-	// track largest area
+	// determine contour with largest area
 	maxArea := 0.0
 	for i := 0; i < contours.Size(); i++ {
 		area := gocv.ContourArea(contours.At(i))
 
-		// update largest area
 		if area > maxArea {
 			maxArea = area
 		}
 
-		// draw rectangle on video frame
-		if area > 100 {
+		// draw rectangle on video frame after meeting a threshold
+		if area > 100.0 {
 			rect := gocv.BoundingRect(contours.At(i))
 			gocv.Rectangle(img, rect, color.RGBA{0, 255, 0, 0}, 2)
 		}
@@ -90,12 +98,6 @@ func DetectGreen(img *gocv.Mat) bool {
 		log.Printf("[VISION] Largest Green Area: %.2f\n", maxArea)
 	}
 
+	// return threshold comparison
 	return maxArea > 200
-}
-
-// Close releases all resources.
-func (vw *VideoWindow) Close() {
-	vw.Capture.Close()
-	vw.Window.Close()
-	vw.img.Close()
 }

@@ -10,27 +10,27 @@ import (
 	"time"
 )
 
-// Drone is an interface to the Ryze Tello drone, with methods for sending common commands.
+// Drone interfaces with the Ryze Tello drone, with methods for sending common commands.
 type Drone struct {
 	conn *net.UDPConn
 }
 
-// Connect uses the drone's IP address to establish a UDP connection and create a Drone.
+// Connect establishes a UDP connection with the drone's IP address for command/response communication.
 func Connect(ip string) (*Drone, error) {
-	// resolve IP address to UDP
+	// resolve IP address string to UDP address
 	addr, err := net.ResolveUDPAddr("udp", ip)
 	if err != nil {
 		return nil, err
 	}
 
-	// establish UDP connection
+	// establish connection to UDP address
 	conn, err := net.DialUDP("udp", nil, addr)
 	if err != nil {
 		return nil, err
 	}
 
+	// create Drone object and send 'command' to initiate Tello's SDK mode
 	d := &Drone{conn: conn}
-	// the 'command' command initiate's Tello's SDK mode
 	if err := d.SendCommand("command"); err != nil {
 		return nil, err
 	}
@@ -38,21 +38,16 @@ func Connect(ip string) (*Drone, error) {
 	return d, nil
 }
 
-// Close closes the UDP connection to the drone.
-func (d *Drone) Close() error {
-	return d.conn.Close()
-}
-
-// SendCommand sends a string command to the drone via UDP and reads its response.
+// SendCommand sends a command string to the drone via UDP and logs its response.
 func (d *Drone) SendCommand(cmd string) error {
-	// send command
+	// send command string via UDP connection
 	log.Printf("[HOST] Sending '%s'...\n", cmd)
 	_, err := d.conn.Write([]byte(cmd))
 	if err != nil {
 		return err
 	}
 
-	// read its response
+	// read response with timeout
 	d.conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 	buf := make([]byte, 1024)
 	n, _, err := d.conn.ReadFromUDP(buf)
@@ -63,33 +58,37 @@ func (d *Drone) SendCommand(cmd string) error {
 	// convert response to string
 	resp := strings.TrimSpace(string(buf[:n]))
 
-	// check "ok" response and allow read commands
+	// log response after validating for "ok" response and read commands (suffix of "?")
 	if resp == "ok" || strings.HasSuffix(cmd, "?") {
 		log.Printf("[DRONE] %s\n", resp)
 		return nil
 	}
+	return fmt.Errorf("[HOST] Command '%s' failed with [DRONE] response: %s", cmd, resp)
+}
 
-	return fmt.Errorf("[DRONE] Command '%s' failed with response: %s", cmd, resp)
+// Close tears down the UDP connection to the drone.
+func (d *Drone) Close() error {
+	return d.conn.Close()
 }
 
 // GENERAL COMMANDS
 
-// Takeoff makes the drone perform auto takeoff.
+// Takeoff makes the drone perform auto takeoff by sending the "takeoff" command.
 func (d *Drone) Takeoff() error {
 	return d.SendCommand("takeoff")
 }
 
-// Land makes the drone perform auto land.
+// Land makes the drone perform auto land by sending the "land" command.
 func (d *Drone) Land() error {
 	return d.SendCommand("land")
 }
 
-// StreamOn starts the video stream from the drone.
+// StreamOn starts the video stream from the drone by sending the "streamon" command.
 func (d *Drone) StreamOn() error {
 	return d.SendCommand("streamon")
 }
 
-// StreamOff stops the video stream from the drone.
+// StreamOff stops the video stream from the drone by sending the "streamoff" command.
 func (d *Drone) StreamOff() error {
 	return d.SendCommand("streamoff")
 }
@@ -126,7 +125,7 @@ func (d *Drone) Back(cm int) error {
 	return d.SendCommand(fmt.Sprintf("back %d", validateDistance(cm)))
 }
 
-// Flip makes the drone flip in a particular direction {l, r, f, b}.
+// Flip makes the drone flip in a particular direction of the set {"l", "r", "f", "b"}.
 func (d *Drone) Flip(dir string) error {
 	if dir != "l" && dir != "r" && dir != "f" && dir != "b" {
 		return fmt.Errorf("[HOST] Invalid Flip Direction")
@@ -140,7 +139,7 @@ const (
 	maxDistanceCm = 500
 )
 
-// validateDistance ensures the distance is within 20 to 500 cm.
+// validateDistance ensures the distance is within 20 to 500 cm (constraints from Tello SDK 1.3.0).
 func validateDistance(cm int) int {
 	if cm < minDistanceCm {
 		log.Printf("[HOST] Distance %d below minimum, using %d\n", cm, minDistanceCm)
@@ -155,24 +154,31 @@ func validateDistance(cm int) int {
 	return cm
 }
 
-// HELPERS
+// HELPER METHODS
 
-// HandleInterrupt sets up a signal handler to stop stream and exit cleanly.
+// HandleInterrupt ensures "streamoff" command is sent and UDP connection to drone is closed
+// on interrupt signal (Ctrl + C).
 func HandleInterrupt(d *Drone) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
 	go func() {
 		<-c
-		log.Println("\n[HOST] Interrupt received, stopping stream...")
+		log.Println("[HOST] Interrupt received, stopping stream...")
+
+		// send "streamoff" command
 		if err := d.StreamOff(); err != nil {
 			log.Printf("[HOST] Failed to stop stream: %v", err)
 		}
+
+		// close UDP connection
+		d.conn.Close()
+
 		os.Exit(0)
 	}()
 }
 
-// ExecuteSequence runs a preprogrammed movement sequence.
+// ExecuteSequence runs a preprogrammed movement sequence (delayed between commands).
 func ExecuteSequence(d *Drone) {
 	if err := d.Takeoff(); err != nil {
 		log.Println(err)
@@ -197,5 +203,6 @@ func ExecuteSequence(d *Drone) {
 
 	if err := d.Land(); err != nil {
 		log.Println(err)
+		return
 	}
 }

@@ -12,18 +12,19 @@ import (
 )
 
 func main() {
-	// lock thread for GoCV windows
-	runtime.LockOSThread()
-
-	// display program introduction
 	introduction()
 
-	// connect to the drone and handle interrupts
+	// lock thread for GoCV window
+	runtime.LockOSThread()
+
+	// connect to the drone
 	d, err := drone.Connect(config.TELLO_CMD_RESP_ADDRESS)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer d.Close()
+
+	// launch goroutine to handle interrupt signal (Ctrl + C)
 	drone.HandleInterrupt(d)
 
 	// check battery percentage
@@ -31,13 +32,13 @@ func main() {
 		log.Printf("[HOST] Battery check failed: %v", err)
 	}
 
-	// start the video stream on the drone
+	// start drone video stream
 	if err := d.StreamOn(); err != nil {
 		log.Fatalf("[HOST] Failed to start video stream: %v", err)
 	}
 	defer d.StreamOff()
 
-	// create a vision.VideoWindow to monitor the drone video stream
+	// create a window to monitor the drone video stream
 	vw, err := vision.NewVideoWindow(config.TELLO_VIDEO_STREAM_ADDRESS, "Tello Video")
 	if err != nil {
 		log.Fatalf("[HOST] Failed to open video window: %v", err)
@@ -46,29 +47,27 @@ func main() {
 
 	// MAIN PROGRAM LOOP
 	for {
-		// read video frame
+		// read video frame, skipping bad frames
 		img, ok := vw.ReadFrame()
 		if !ok {
 			continue
 		}
 
-		// process frame add detection rectangle and return green threshold passed
+		// process frame to detect presence of bright green color (adds rectangle to frame)
 		greenDetected := vision.DetectGreen(&img)
 
-		// render window and process GUI events
+		// render frame to window
 		vw.Display(img)
 
 		// on detection of green, execute preprogrammed commands
 		if greenDetected {
-			log.Println("[DRONE] Green detected, executing command sequence!")
+			log.Println("[VISION] Green detected! Executing command sequence!")
+
 			time.Sleep(500 * time.Millisecond)
-			drone.ExecuteSequence(d)
+			drone.ExecuteSequence(d) // comment-able when debugging
 
-			// stop stream cleanly
-			if err := d.StreamOff(); err != nil {
-				log.Printf("[HOST] Failed to stop stream: %v", err)
-			}
-
+			// exit loop to end program
+			log.Println("[HOST] Completed program! Exiting...")
 			break
 		}
 	}
