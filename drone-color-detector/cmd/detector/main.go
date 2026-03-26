@@ -32,11 +32,20 @@ func main() {
 		log.Printf("[HOST] Battery check failed: %v", err)
 	}
 
-	// start drone video stream
+	// start drone video stream, deferring StreamOff conditionally
+	// based on whether main loop success scenario calls it manually
 	if err := d.StreamOn(); err != nil {
 		log.Fatalf("[HOST] Failed to start video stream: %v", err)
 	}
-	defer d.StreamOff()
+	streamOn := true
+	defer func() {
+		if streamOn {
+			log.Println("[HOST] Deferred streamoff...")
+			if err := d.StreamOff(); err != nil {
+				log.Printf("[HOST] Failed to stop stream: %v", err)
+			}
+		}
+	}()
 
 	// create a window to monitor the drone video stream
 	vw, err := vision.NewVideoWindow(config.TELLO_VIDEO_STREAM_ADDRESS, "Tello Video")
@@ -63,11 +72,15 @@ func main() {
 		if greenDetected {
 			log.Println("[VISION] Green detected!")
 
-			// close drone video stream and window
+			// close drone video stream
 			log.Println("[HOST] Stopping video stream before command sequence...")
 			if err := d.StreamOff(); err != nil {
 				log.Printf("[HOST] Failed to stop stream: %v", err)
+			} else {
+				streamOn = false // StreamOff called manually, so defer doesn't call it again
 			}
+
+			// close video window
 			vw.Close()
 
 			log.Println("[HOST] Executing command sequence!")
@@ -81,7 +94,7 @@ func main() {
 		}
 	}
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Second) // rate of reading frames
 }
 
 // introduction displays project information and links.
