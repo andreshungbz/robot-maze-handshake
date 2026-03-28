@@ -2,7 +2,7 @@
 
 /* CONFIGURATION: Me RGB LED Module */
 
-MeRGBLed led{ PORT_6 };
+MeRGBLed led{ PORT_7 };
 constexpr uint8_t LED_COUNT{ 4 };
 
 // hw_set_rgb_led_color sets all LED components to one color.
@@ -27,7 +27,7 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed) {
 
 /* CONFIGURATION: Me Ultrasonic Sensor */
 
-MeUltrasonicSensor ultrasonic{ PORT_7 };
+MeUltrasonicSensor ultrasonic{ PORT_6 };
 
 // hw_get_ultrasonic_distance returns distance in cm.
 uint16_t hw_get_ultrasonic_distance() {
