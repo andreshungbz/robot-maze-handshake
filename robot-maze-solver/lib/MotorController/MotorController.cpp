@@ -16,7 +16,7 @@ void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t t
     }
     else {
         // if at designated distance from the wall, move forward
-        driveForward();
+        driveForward(BASE_SPEED);
     }
 }
 
