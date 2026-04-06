@@ -17,5 +17,5 @@ private:
 
     // DETECTION_THRESHOLD represents the number of consecutive valid readings
     // are needed before confirming isWallAhead().
-    static constexpr int DETECTION_THRESHOLD{ 3 };
+    static constexpr int DETECTION_THRESHOLD{ 1 };
 };
