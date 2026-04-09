@@ -1,139 +1,184 @@
 #include "MazeSolver.h"
 
-MazeSolver::MazeSolver(MotorController& motors, UltrasonicSensor& usSensor, LineSensor& lineSensor)
-    : motors(motors), usSensor(usSensor), lfSensor(lineSensor) {
+MazeSolver::MazeSolver(BLEController& ble, LineSensor& lineSensor, MotorController& motors, RGBLEDController& rgbLED, UltrasonicSensor& usSensor)
+    : ble(ble), lfSensor(lineSensor), motors(motors), rgbLED(rgbLED), usSensor(usSensor) {
 }
 
 void MazeSolver::update() {
-    // READ SENSORS
-
+    // read sensors
     uint16_t rightDistance = usSensor.getDistanceCm();
     bool rightWallDetected = rightDistance < RIGHT_OPEN_THRESHOLD;
     bool frontWallDetected = lfSensor.isWallAhead();
 
     switch (currentMode) {
 
-    case Mode::NORMAL: {
-        // 1. RIGHT OPEN → TURN RIGHT
+    case Mode::NORMAL: { // Regular application of right-hand rule while checking for island
+        // 1. RIGHT OPEN then TURN RIGHT
         if (!rightWallDetected) {
-            if (leftTurnCounter != 4) { // normal case when not on the 4th left turn
-                leftTurnCounter = 0;
-                resetSegments();
+            // do only when not on a 4th consecutive left turn (island check)
+            if (leftTurnCounter != 4) {
+                resetIslandCheck();
+
+                // right turn movement
                 handleBackoff();
-                handleTurnRight();
+                motors.pivotRight90();
+                handleForwardOffset();
+
                 return;
             }
         }
 
-        // 2. FRONT BLOCKED + RIGHT BLOCKED → LEFT TURN
+        // 2. RIGHT BLOCKED and FRONT BLOCKED then LEFT TURN
         if (frontWallDetected) {
+            // when not on a 4th consecutive left turn (island check)
             if (leftTurnCounter != 4) {
+                // record starting on index 1 since that is when the first segment is measured
                 if (leftTurnCounter != 0) {
-                    recordSegment();
+                    recordRectangleSegment();
                 }
 
                 ++leftTurnCounter;
-                handleBackoff();
-                handleTurnLeft();
-                return;
-            }
-            else { // we should have 4 segments at this point, so we check if it's a valid rectangle
-                recordSegment(); // ← capture the final segment
 
-                if (segmentIndex == 4 && validateRectangle()) {
+                // set RGB to blue when traversing 4th segment
+                if (leftTurnCounter == 4) {
+                    rgbLED.setBlue();
+                }
+
+                // left turn movement
+                handleBackoff();
+                motors.pivotLeft90();
+            }
+            // when on the 4th consecutive left turn (island check)
+            else {
+                // record the last rectangle segment
+                recordRectangleSegment();
+
+                // if the rectangle is valid, we are in an island
+                if (rectangleSegmentIndex == 4 && validateRectangleIsland()) {
+                    // change mode
                     currentMode = Mode::IN_ISLAND;
 
-                    // essentially reverse direction
+                    // reverse direction movement
                     handleBackoff();
-                    handleTurnLeft();
-                    handleTurnLeft();
+                    motors.pivotLeft90();
+                    motors.pivotLeft90();
+                    handleForwardOffset();
 
-                    resetSegments();
-                    leftTurnCounter = 0;
+                    rgbLED.setRed();
                 }
+                // invalid rectangle (e.g. omega form)
                 else {
+                    // if there happens to be a right opening, then go through it and resume right-hand rule
                     if (!rightWallDetected) {
-                        currentMode = Mode::NORMAL;
-
+                        // right turn movement
                         handleBackoff();
-                        handleTurnRight();
+                        motors.pivotRight90();
+                        handleForwardOffset();
 
-                        resetSegments();
-                        leftTurnCounter = 0;
-
-                        return;
+                        rgbLED.turnOff();
                     }
+                    // else we need to retrace the last segment by reversing
                     else {
+                        // change mode
                         currentMode = Mode::RETRACING;
 
-                        // essentially reverse direction
+                        // reverse direction movement (no forward offset as we won't check left anyways)
                         handleBackoff();
-                        handleTurnLeft();
-                        handleTurnLeft();
-
-                        resetSegments();
-                        leftTurnCounter = 0;
+                        motors.pivotLeft90();
+                        motors.pivotLeft90();
                     }
                 }
+
+                // regardless of 4th consecutive left turn outcome, reset counter and segments
+                resetIslandCheck();
+            }
+
+            return;
+        }
+
+        // 3. FORWARD
+        ++currentRectangleSegmentLength;// increment segment length that may be recorded
+        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
+
+        return;
+    }
+
+    case Mode::RETRACING: { // When retracing the 4th segment is necessary (rectangle validation failed)
+        // keep going forward until the first wall is hit, then reverse and resume right hand rule
+        if (frontWallDetected) {
+            // change mode
+            currentMode = Mode::NORMAL;
+
+            // reverse direction movement
+            handleBackoff();
+            motors.pivotLeft90();
+            motors.pivotLeft90();
+
+            rgbLED.turnOff();
+        }
+        else {
+            motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
+        }
+
+        return;
+    }
+
+    case Mode::IN_ISLAND: { // Continue traversal until finish point is found (first dead end)
+        // 1. RIGHT OPEN then TURN RIGHT
+        if (!rightWallDetected) {
+            rightWallBlockedCounter = 0;
+
+            // right turn movement
+            handleBackoff();
+            motors.pivotRight90();
+            handleForwardOffset();
+
+            return;
+        }
+
+        // 2. RIGHT BLOCKED and FRONT BLOCKED then CHECK GOAL or LEFT TURN
+        if (frontWallDetected) {
+            // X. FINISH POINT (GOAL) DETECTION
+            ++rightWallBlockedCounter; // one right wall was already detected
+            // consecutively check for next 2 walls
+            for (int i{ 1 }; i <= 2; ++i) {
+                motors.pivotLeft90();
+                uint16_t rDistance = usSensor.getDistanceCm();
+                bool rWDetected = rDistance < RIGHT_OPEN_THRESHOLD;
+
+                if (rWDetected) {
+                    ++rightWallBlockedCounter;
+                }
+            }
+
+            // undo right wall checks
+            motors.pivotRight90();
+            motors.pivotRight90();
+
+            // if we reached a dead end in the island, set goal flag
+            if (rightWallBlockedCounter >= GOAL_THRESHOLD) {
+                motors.stop();
+                rgbLED.setGreen();
+                reachedGoal = true;
+
+                rightWallBlockedCounter = 0;
 
                 return;
             }
-        }
 
-        // 3. FORWARD
-        currentSegmentLength++;
-        motors.driveForwardWithCorrection(rightDistance, TARGET, CORRECTION);
-        break;
-    }
-
-    case Mode::RETRACING: {
-        if (frontWallDetected) {
-            currentMode = Mode::NORMAL;
-            // essentially reverse direction
+            // if the goal wasn't detected, then do a regular left turn
             handleBackoff();
-            handleTurnLeft();
-            handleTurnLeft();
-            return;
-        }
-        else {
-            motors.driveForwardWithCorrection(rightDistance, TARGET, CORRECTION);
-            return;
-        }
-    }
+            motors.pivotLeft90();
 
-    case Mode::IN_ISLAND: {
-        // 1. RIGHT OPEN → TURN RIGHT
-        // in the island, we could still make some right turns before reaching a dead end
-        if (!rightWallDetected) {
             rightWallBlockedCounter = 0;
-            handleBackoff();
-            handleTurnRight();
-            return;
-        }
 
-        // GOAL DETECTION
-        // detecting 3 consecutive right walls
-        ++rightWallBlockedCounter;
-        if (rightWallBlockedCounter >= GOAL_THRESHOLD) {
-            reachedGoal = true;
-            resetCounters();
-            handleTurnLeft();
-            handleTurnLeft();
-            return;
-        }
-
-        // 2. FRONT BLOCKED → LEFT TURN
-        if (frontWallDetected) {
-            handleBackoff();
-            handleTurnLeft();
             return;
         }
 
         // 3. FORWARD
-        motors.driveForwardWithCorrection(rightDistance, TARGET, CORRECTION);
+        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
         break;
     }
-
     }
 }
 
@@ -141,18 +186,15 @@ bool MazeSolver::isGoalReached() const {
     return reachedGoal;
 }
 
-// =========================
+void MazeSolver::resetAll() {
+    resetIslandCheck();
+    rightWallBlockedCounter = 0;
+    reachedGoal = false;
+
+    rgbLED.turnOff();
+}
+
 // Helper Methods
-// =========================
-
-void MazeSolver::handleTurnRight() {
-    motors.pivotRight90();
-    handleForwardOffset();
-}
-
-void MazeSolver::handleTurnLeft() {
-    motors.pivotLeft90();
-}
 
 void MazeSolver::handleForwardOffset() {
     motors.driveForward();
@@ -164,35 +206,38 @@ void MazeSolver::handleBackoff() {
     delay(250);
 }
 
-void MazeSolver::resetCounters() {
-    leftTurnCounter = 0;
-    rightWallBlockedCounter = 0;
-}
+void MazeSolver::recordRectangleSegment() {
+    if (rectangleSegmentIndex < 4) {
+        // debugging
+        ble.write(rectangleSegmentIndex + 1);
+        ble.write(currentRectangleSegmentLength);
 
-void MazeSolver::resetSegments() {
-    segmentIndex = 0;
-    currentSegmentLength = 0;
-    for (int i = 0; i < 4; ++i) segmentLengths[i] = 0;
-}
-
-void MazeSolver::recordSegment() {
-    if (segmentIndex < 4) {
-        segmentLengths[segmentIndex++] = currentSegmentLength;
-        currentSegmentLength = 0;
+        rectangleSegmentLengths[rectangleSegmentIndex++] = currentRectangleSegmentLength;
+        currentRectangleSegmentLength = 0;
     }
 }
 
-bool MazeSolver::validateRectangle() {
-    int s0 = segmentLengths[0];
-    int s1 = segmentLengths[1];
-    int s2 = segmentLengths[2];
-    int s3 = segmentLengths[3];
+bool MazeSolver::validateRectangleIsland() {
+    int s0 = rectangleSegmentLengths[0];
+    int s1 = rectangleSegmentLengths[1];
+    int s2 = rectangleSegmentLengths[2];
+    int s3 = rectangleSegmentLengths[3];
 
-    bool oppositeMatch = abs(s0 - s2) <= LENGTH_TOLERANCE &&
-        abs(s1 - s3) <= LENGTH_TOLERANCE;
+    // check opposite sides having more or less equal lengths
+    bool oppositeMatch = abs(s0 - s2) <= RECTANGLE_SEGMENT_LENGTH_TOLERANCE &&
+        abs(s1 - s3) <= RECTANGLE_SEGMENT_LENGTH_TOLERANCE;
 
+    // check for strictly increasing and strictly decreasing values (not rectangle)
     bool monotonic = (s0 > s1 && s1 > s2 && s2 > s3) ||
         (s0 < s1 && s1 < s2 && s2 < s3);
 
     return oppositeMatch && !monotonic;
+}
+
+void MazeSolver::resetIslandCheck() {
+    leftTurnCounter = 0;
+
+    rectangleSegmentIndex = 0;
+    currentRectangleSegmentLength = 0;
+    for (int i = 0; i < 4; ++i) rectangleSegmentLengths[i] = 0;
 }

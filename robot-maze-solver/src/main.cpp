@@ -11,7 +11,7 @@
 
 // Main Configuration
 constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 25 }; // main loop delay
-RobotMode currentMode{ RobotMode::MANUAL };               // starting mode
+RobotMode currentMode{ RobotMode::MANUAL }; // starting mode
 
 // Object Initializations
 
@@ -22,7 +22,7 @@ MotorController motors{};
 RGBLEDController rgbLED{};
 UltrasonicSensor us{};
 // higher-level objects
-MazeSolver mazeSolver{ motors, us, lfs };
+MazeSolver mazeSolver{ ble, lfs, motors, rgbLED, us };
 CommandParser parser{ rgbLED, motors, currentMode };
 
 // forward declaration for introduction
@@ -30,7 +30,7 @@ void introduction();
 
 void setup() {
     Serial.begin(9600); // debugging/monitoring
-    ble.begin(115200);  // Makeblock BLEV1.0_Z module
+    ble.begin(115200); // Makeblock BLEV1.0_Z module
 
     introduction();
 }
@@ -59,8 +59,9 @@ void loop() {
             char cmd{ ble.read() };
             if (cmd == 'M') {
                 motors.stop();
+                mazeSolver.resetAll();
                 currentMode = RobotMode::MANUAL;
-                Serial.println("[AUTONOMOUS] Overriding to [MANUAL] mode");
+                ble.write("[AUTONOMOUS] Overriding to [MANUAL] mode");
                 return;
             }
         }
@@ -68,12 +69,10 @@ void loop() {
         // continue maze navigation using the right-hand rule.
         mazeSolver.update();
 
-        // if the final point is achieved, turn on RGB LED and switch back to [MANUAL] mode
+        // if the final point is achieved, switch back to [MANUAL] mode
         if (mazeSolver.isGoalReached()) {
-            motors.stop();
-            rgbLED.setGreen();
             currentMode = RobotMode::MANUAL;
-            Serial.println("[AUTONOMOUS] Goal reached! Switching to [MANUAL] mode");
+            ble.write("[AUTONOMOUS] Goal reached! Switching to [MANUAL] mode");
             return;
         }
     }
