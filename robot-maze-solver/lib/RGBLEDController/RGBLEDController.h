@@ -4,10 +4,12 @@
 // RGBLEDController controls the RGB LED module.
 class RGBLEDController {
 public:
-    // setGreen sets the color to pure green (0, 255, 0).
-    void setGreen();
     // setRed sets the color to pure red (255, 0, 0).
     void setRed();
+    // setGreen sets the color to pure green (0, 255, 0).
+    void setGreen();
+    // setBlue sets the color to pure blue (0, 0, 255).
+    void setBlue();
     // turnOff turns all LEDs off (0, 0, 0).
     void turnOff();
 
