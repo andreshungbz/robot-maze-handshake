@@ -21,11 +21,16 @@ void MazeSolver::update() {
 
                 // right turn movement
                 ble.write("[NORMAL] 1. Right");
-                handleBackoff();
-                motors.pivotRight90();
-                handleForwardOffset();
 
-                return;
+                if (!first) {
+                    handleUltrasonicPositionOffset();
+                    first = false;
+                }
+
+                motors.pivotRight90();
+                handleRightOpeningOffset();
+
+                break;
             }
         }
 
@@ -66,17 +71,19 @@ void MazeSolver::update() {
                     handleBackoff();
                     motors.pivotLeft90();
                     motors.pivotLeft90();
-                    handleForwardOffset();
+                    handleRightOpeningOffset();
                 }
                 // invalid rectangle (e.g. omega form)
                 else {
+                    rgbLED.turnOff();
+
                     // if there happens to be a right opening, then go through it and resume right-hand rule
                     if (!rightWallDetected) {
                         // right turn movement
                         ble.write("[INVALID RECTANGLE] 2.C Right");
                         handleBackoff();
                         motors.pivotRight90();
-                        handleForwardOffset();
+                        handleRightOpeningOffset();
 
                         rgbLED.turnOff();
                     }
@@ -97,14 +104,21 @@ void MazeSolver::update() {
                 resetIslandCheck();
             }
 
-            return;
+            break;
         }
 
         // 3. FORWARD
         ++currentRectangleSegmentLength;// increment segment length that may be recorded
-        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
+        // when not on a 4th consecutive left turn (island check), drive with correction
+        if (leftTurnCounter != 4) {
+            motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
+        }
+        // decreased movement correction
+        else {
+            motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, 10);
+        }
 
-        return;
+        break;
     }
 
     case Mode::RETRACING: { // When retracing the 4th segment is necessary (rectangle validation failed)
@@ -125,7 +139,7 @@ void MazeSolver::update() {
             motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
         }
 
-        return;
+        break;
     }
 
     case Mode::IN_ISLAND: { // Continue traversal until finish point is found (first dead end)
@@ -135,11 +149,11 @@ void MazeSolver::update() {
 
             // right turn movement
             ble.write("[ISLAND] 1. Right");
-            handleBackoff();
+            handleUltrasonicPositionOffset();
             motors.pivotRight90();
-            handleForwardOffset();
+            handleRightOpeningOffset();
 
-            return;
+            break;
         }
 
         // 2. RIGHT BLOCKED and FRONT BLOCKED then CHECK GOAL or LEFT TURN
@@ -171,7 +185,7 @@ void MazeSolver::update() {
 
                 rightWallBlockedCounter = 0;
 
-                return;
+                break;
             }
 
             // if the goal wasn't detected, then do a regular left turn
@@ -181,7 +195,7 @@ void MazeSolver::update() {
 
             rightWallBlockedCounter = 0;
 
-            return;
+            break;
         }
 
         // 3. FORWARD
@@ -189,6 +203,8 @@ void MazeSolver::update() {
         break;
     }
     }
+
+    first = false;
 }
 
 bool MazeSolver::isGoalReached() const {
@@ -198,6 +214,8 @@ bool MazeSolver::isGoalReached() const {
 void MazeSolver::resetAll() {
     resetIslandCheck();
     rightWallBlockedCounter = 0;
+    currentMode = Mode::NORMAL;
+    first = true;
     reachedGoal = false;
 
     rgbLED.turnOff();
@@ -205,21 +223,29 @@ void MazeSolver::resetAll() {
 
 // Helper Methods
 
-void MazeSolver::handleForwardOffset() {
+void MazeSolver::handleRightOpeningOffset() {
     motors.driveForward();
-    delay(1000);
+    delay(550);
+}
+
+void MazeSolver::handleUltrasonicPositionOffset() {
+    motors.driveForward();
+    delay(350);
 }
 
 void MazeSolver::handleBackoff() {
     motors.driveBackward();
-    delay(50);
+    delay(100);
 }
 
 void MazeSolver::recordRectangleSegment() {
     if (rectangleSegmentIndex < 4) {
         // debugging
-        ble.write("[SEGMENT] Length");
-        ble.write(currentRectangleSegmentLength);
+        char buffer[12];
+        itoa(currentRectangleSegmentLength, buffer, 10);
+        ble.write("[SEGMENT] Length ");
+        ble.write(buffer);
+        ble.write("\n");
 
         rectangleSegmentLengths[rectangleSegmentIndex++] = currentRectangleSegmentLength;
         currentRectangleSegmentLength = 0;

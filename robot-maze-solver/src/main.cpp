@@ -10,7 +10,7 @@
 #include "UltrasonicSensor.h"
 
 // Main Configuration
-constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 5 }; // main loop delay
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 0 }; // main loop delay
 RobotMode currentMode{ RobotMode::MANUAL }; // starting mode
 
 // Object Initializations

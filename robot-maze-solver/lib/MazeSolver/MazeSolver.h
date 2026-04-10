@@ -32,6 +32,8 @@ private:
     RGBLEDController& rgbLED;
     UltrasonicSensor& usSensor;
 
+    bool first{ true };
+
     // Finish Point Counters & Flags
     bool reachedGoal{ false };
     int rightWallBlockedCounter{ 0 }; // detecting dead end in island (finish point)
@@ -45,16 +47,19 @@ private:
     // MazeSolver Configuration
     static constexpr int GOAL_THRESHOLD{ 3 }; // consecutive right wall blocks in an island that confirms finish point
     static constexpr int LEFT_TURN_ISLAND_THRESHOLD{ 4 }; // consecutive left turns that indicate possible island
-    static constexpr int RIGHT_OPEN_THRESHOLD{ 12 }; // distance considered a right opening (cm)
+    static constexpr int RIGHT_OPEN_THRESHOLD{ 18 }; // distance considered a right opening (cm)
     static constexpr int RIGHT_WALL_DISTANCE_TARGET{ 6 }; // distance aimed against right wall while moving (cm)
-    static constexpr int MOVEMENT_CORRECTION{ 35 }; // motor speed correction value when moving
-    static constexpr int RECTANGLE_SEGMENT_LENGTH_TOLERANCE{ 3 }; // allowed deviation in rectangle segment lengths
+    static constexpr int MOVEMENT_CORRECTION{ 20 }; // motor speed correction value when moving
+    static constexpr int RECTANGLE_SEGMENT_LENGTH_TOLERANCE{ 5000 }; // allowed deviation in rectangle segment lengths
 
     // Helper Methods
 
-    // handleForwardOffset drives the robot forward when making right turns so that
+    // handleRightOpeningOffset drives the robot forward when making right turns so that
     // the ultrasonic sensor is not positioned against the opening from which the robot just came from.
-    void handleForwardOffset();
+    void handleRightOpeningOffset();
+    // handleUltrasonicPositionOffset drives the robot forward when first detecting a right opening so
+    // that the position of the ultrasonic sensor is accounted for.
+    void handleUltrasonicPositionOffset();
     // handleBackoff drives the robot slightly backwards so that turns made when detecting the
     // front wall are not too close to the wall.
     void handleBackoff();
