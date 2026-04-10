@@ -10,7 +10,7 @@
 #include "UltrasonicSensor.h"
 
 // Main Configuration
-constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 25 }; // main loop delay
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 5 }; // main loop delay
 RobotMode currentMode{ RobotMode::MANUAL }; // starting mode
 
 // Object Initializations
@@ -33,17 +33,26 @@ void setup() {
     ble.begin(115200); // Makeblock BLEV1.0_Z module
 
     introduction();
+
+    // testing forward offset (debugging)
+    // motors.driveForward();
+    // delay(1000);
+    // motors.stop();
 }
 
 void loop() {
     // [MANUAL] Mode
     if (currentMode == RobotMode::MANUAL) {
+        // sensor tests (debugging)
+        // Serial.println(lfs.getSensors());
+        // Serial.println(us.getDistanceCm());
+
         // parse available BLE data
         while (ble.available()) {
             char cmd{ ble.read() };
 
             // echo command back (debugging)
-            ble.write(cmd);
+            // ble.write(cmd);
 
             parser.parseCommand(cmd);
         }
