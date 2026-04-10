@@ -1,16 +1,17 @@
 #pragma once
 
+#include "BLEController.h"
+#include "MotorController.h"
 #include "RGBLEDController.h"
 #include "RobotMode.h"
-#include "MotorController.h"
 
 // CommandParser parses and activates commands sent from the robot-bt-controller
 // program while the robot is in [MANUAL] mode.
 class CommandParser {
 public:
     // constructor
-    CommandParser(RGBLEDController& led, MotorController& motors, RobotMode& mode)
-        : rgbLED(led), motors(motors), currentMode(mode), RGBLEDOn(false) {
+    CommandParser(BLEController& ble, RGBLEDController& led, MotorController& motors, RobotMode& mode)
+        : ble(ble), rgbLED(led), motors(motors), currentMode(mode), RGBLEDOn(false) {
     }
 
     // parseCommand examines commands and activates the appropriate module or motors.
@@ -19,6 +20,7 @@ public:
 private:
     // Data Members
 
+    BLEController& ble;
     RGBLEDController& rgbLED;
     MotorController& motors;
     RobotMode& currentMode;

@@ -7,11 +7,11 @@ void CommandParser::parseCommand(char cmd) {
     case 'X':
         if (RGBLEDOn) {
             rgbLED.turnOff();
-            Serial.println("[MANUAL] RGB LED turned OFF");
+            ble.write("[MANUAL] RGB LED turned OFF");
         }
         else {
             rgbLED.setGreen();
-            Serial.println("[MANUAL] RGB LED set to GREEN");
+            ble.write("[MANUAL] RGB LED set to GREEN");
         }
         RGBLEDOn = !RGBLEDOn;
         break;
@@ -19,57 +19,57 @@ void CommandParser::parseCommand(char cmd) {
         // Drive Forward
     case 'F':
         motors.driveForward(175);
-        Serial.println("[MANUAL] Moving forward");
+        ble.write("[MANUAL] Moving forward");
         break;
 
         // Drive Backwards
     case 'B':
         motors.driveBackward(175);
-        Serial.println("[MANUAL] Moving backward");
+        ble.write("[MANUAL] Moving backward");
         break;
 
         // Turn Left 90 Degrees
     case 'L':
         motors.pivotLeft90();
-        Serial.println("[MANUAL] Pivot left 90°");
+        ble.write("[MANUAL] Pivot left 90°");
         break;
 
         // Turn Right 90 Degrees
     case 'R':
         motors.pivotRight90();
-        Serial.println("[MANUAL] Pivot right 90°");
+        ble.write("[MANUAL] Pivot right 90°");
         break;
 
         // Pivot Left Gradually
     case '1':
         motors.pivotLeft(75);
-        Serial.println("[MANUAL] Pivot left gradually");
+        ble.write("[MANUAL] Pivot left gradually");
         break;
 
         // Pivot Right Gradually
     case '2':
         motors.pivotRight(75);
-        Serial.println("[MANUAL] Pivot right gradually");
+        ble.write("[MANUAL] Pivot right gradually");
         break;
 
         // Stop
     case 'S':
         motors.stop();
-        Serial.println("[MANUAL] Stop motors");
+        ble.write("[MANUAL] Stop motors");
         break;
 
         // Switch to [AUTONOMOUS] Mode
     case 'A':
         currentMode = RobotMode::AUTONOMOUS;
-        Serial.println("[MANUAL] Switching to [AUTONOMOUS] mode...");
+        ble.write("[MANUAL] Switching to [AUTONOMOUS] mode...");
         break;
 
         // Redundancy message for [MANUAL] Mode
     case 'M':
-        Serial.println("[MANUAL] Already in [MANUAL] mode");
+        ble.write("[MANUAL] Already in [MANUAL] mode");
         break;
 
     default:
-        Serial.println("[MANUAL] Unknown Command");
+        ble.write("[MANUAL] Unknown Command");
     }
 }

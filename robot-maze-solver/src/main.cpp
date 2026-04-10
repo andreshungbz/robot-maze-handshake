@@ -41,9 +41,6 @@ void loop() {
         // parse available BLE data
         while (ble.available()) {
             char cmd{ ble.read() };
-            Serial.print("[MANUAL] Received Command: ");
-            Serial.print(cmd);
-            Serial.println();
 
             // echo command back (debugging)
             ble.write(cmd);
