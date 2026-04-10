@@ -7,11 +7,11 @@ void CommandParser::parseCommand(char cmd) {
     case 'X':
         if (RGBLEDOn) {
             rgbLED.turnOff();
-            ble.write("[MANUAL] RGB LED turned OFF");
+            // ble.write("[MANUAL] RGB LED turned OFF");
         }
         else {
             rgbLED.setGreen();
-            ble.write("[MANUAL] RGB LED set to GREEN");
+            // ble.write("[MANUAL] RGB LED set to GREEN");
         }
         RGBLEDOn = !RGBLEDOn;
         break;
@@ -19,43 +19,43 @@ void CommandParser::parseCommand(char cmd) {
         // Drive Forward
     case 'F':
         motors.driveForward(175);
-        ble.write("[MANUAL] Moving forward");
+        // ble.write("[MANUAL] Moving forward");
         break;
 
         // Drive Backwards
     case 'B':
         motors.driveBackward(175);
-        ble.write("[MANUAL] Moving backward");
+        // ble.write("[MANUAL] Moving backward");
         break;
 
         // Turn Left 90 Degrees
     case 'L':
         motors.pivotLeft90();
-        ble.write("[MANUAL] Pivot left 90°");
+        // ble.write("[MANUAL] Pivot left 90°");
         break;
 
         // Turn Right 90 Degrees
     case 'R':
         motors.pivotRight90();
-        ble.write("[MANUAL] Pivot right 90°");
+        // ble.write("[MANUAL] Pivot right 90°");
         break;
 
         // Pivot Left Gradually
     case '1':
         motors.pivotLeft(75);
-        ble.write("[MANUAL] Pivot left gradually");
+        // ble.write("[MANUAL] Pivot left gradually");
         break;
 
         // Pivot Right Gradually
     case '2':
         motors.pivotRight(75);
-        ble.write("[MANUAL] Pivot right gradually");
+        // ble.write("[MANUAL] Pivot right gradually");
         break;
 
         // Stop
     case 'S':
         motors.stop();
-        ble.write("[MANUAL] Stop motors");
+        // ble.write("[MANUAL] Stop motors");
         break;
 
         // Switch to [AUTONOMOUS] Mode

@@ -20,6 +20,7 @@ void MazeSolver::update() {
                 resetIslandCheck();
 
                 // right turn movement
+                ble.write("[NORMAL] 1. Right");
                 handleBackoff();
                 motors.pivotRight90();
                 handleForwardOffset();
@@ -45,6 +46,7 @@ void MazeSolver::update() {
                 }
 
                 // left turn movement
+                ble.write("[NORMAL] 2.A Left");
                 handleBackoff();
                 motors.pivotLeft90();
             }
@@ -56,21 +58,22 @@ void MazeSolver::update() {
                 // if the rectangle is valid, we are in an island
                 if (rectangleSegmentIndex == 4 && validateRectangleIsland()) {
                     // change mode
+                    rgbLED.setRed();
                     currentMode = Mode::IN_ISLAND;
 
                     // reverse direction movement
+                    ble.write("[VALID RECTANGLE] 2.B Reverse");
                     handleBackoff();
                     motors.pivotLeft90();
                     motors.pivotLeft90();
                     handleForwardOffset();
-
-                    rgbLED.setRed();
                 }
                 // invalid rectangle (e.g. omega form)
                 else {
                     // if there happens to be a right opening, then go through it and resume right-hand rule
                     if (!rightWallDetected) {
                         // right turn movement
+                        ble.write("[INVALID RECTANGLE] 2.C Right");
                         handleBackoff();
                         motors.pivotRight90();
                         handleForwardOffset();
@@ -83,6 +86,7 @@ void MazeSolver::update() {
                         currentMode = Mode::RETRACING;
 
                         // reverse direction movement (no forward offset as we won't check left anyways)
+                        ble.write("[INVALID RECTANGLE] 2.D Reverse");
                         handleBackoff();
                         motors.pivotLeft90();
                         motors.pivotLeft90();
@@ -110,6 +114,7 @@ void MazeSolver::update() {
             currentMode = Mode::NORMAL;
 
             // reverse direction movement
+            ble.write("[RETRACING] Reverse");
             handleBackoff();
             motors.pivotLeft90();
             motors.pivotLeft90();
@@ -129,6 +134,7 @@ void MazeSolver::update() {
             rightWallBlockedCounter = 0;
 
             // right turn movement
+            ble.write("[ISLAND] 1. Right");
             handleBackoff();
             motors.pivotRight90();
             handleForwardOffset();
@@ -138,6 +144,7 @@ void MazeSolver::update() {
 
         // 2. RIGHT BLOCKED and FRONT BLOCKED then CHECK GOAL or LEFT TURN
         if (frontWallDetected) {
+            ble.write("[ISLAND] 2.A Checking Goal");
             // X. FINISH POINT (GOAL) DETECTION
             ++rightWallBlockedCounter; // one right wall was already detected
             // consecutively check for next 2 walls
@@ -157,6 +164,7 @@ void MazeSolver::update() {
 
             // if we reached a dead end in the island, set goal flag
             if (rightWallBlockedCounter >= GOAL_THRESHOLD) {
+                ble.write("[ISLAND] 2.B Goal!");
                 motors.stop();
                 rgbLED.setGreen();
                 reachedGoal = true;
@@ -167,6 +175,7 @@ void MazeSolver::update() {
             }
 
             // if the goal wasn't detected, then do a regular left turn
+            ble.write("[ISLAND] 2.C Left");
             handleBackoff();
             motors.pivotLeft90();
 
@@ -203,13 +212,13 @@ void MazeSolver::handleForwardOffset() {
 
 void MazeSolver::handleBackoff() {
     motors.driveBackward();
-    delay(250);
+    delay(50);
 }
 
 void MazeSolver::recordRectangleSegment() {
     if (rectangleSegmentIndex < 4) {
         // debugging
-        ble.write(rectangleSegmentIndex + 1);
+        ble.write("[SEGMENT] Length");
         ble.write(currentRectangleSegmentLength);
 
         rectangleSegmentLengths[rectangleSegmentIndex++] = currentRectangleSegmentLength;
