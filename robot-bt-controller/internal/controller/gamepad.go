@@ -109,7 +109,7 @@ func (g *Gamepad) Start(out chan<- byte) {
 			}
 		}
 
-		sdl.Delay(50)
+		sdl.Delay(5)
 	}
 }
 
