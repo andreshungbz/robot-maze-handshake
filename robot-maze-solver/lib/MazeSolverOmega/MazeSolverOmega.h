@@ -7,11 +7,11 @@
 #include "RGBLEDController.h"
 #include "UltrasonicSensor.h"
 
-// MazeSolver directs a robot to solve a maze using the right-hand rule.
-class MazeSolver {
+// MazeSolverOmega directs a robot to solve a maze using the right-hand rule.
+class MazeSolverOmega {
 public:
     // constructor
-    MazeSolver(BLEController& ble, LineSensor& lineSensor, MotorController& motors, RGBLEDController& rgbLED, UltrasonicSensor& usSensor);
+    MazeSolverOmega(BLEController& ble, LineSensor& lineSensor, MotorController& motors, RGBLEDController& rgbLED, UltrasonicSensor& usSensor);
 
     // update keeps track of the maze state and directs the appropriate robot movement.
     void update();
@@ -22,24 +22,22 @@ public:
 
 private:
     // Mode distinguishes the different logic taken by MazeSolver.
-    enum class Mode { NORMAL, IN_ISLAND };
+    enum class Mode { NORMAL, IN_ISLAND, RETRACING };
     Mode currentMode{ Mode::NORMAL };
 
     // Hardware Components
-
     BLEController& ble;
     LineSensor& lfSensor;
     MotorController& motors;
     RGBLEDController& rgbLED;
     UltrasonicSensor& usSensor;
 
-    // Counters & Flags & Configurations
-
+    // Main Counters & Flags & Configurations
     bool reachedGoal{ false };
-    int islandContainerWallCounter{ 0 }; // detecting potential islands
+    int leftTurnCounter{ 0 }; // detecting potential islands
     int rightWallBlockedCounter{ 0 }; // detecting dead end in island (finish point)
     static constexpr int GOAL_THRESHOLD{ 3 }; // consecutive right wall blocks in an island that confirms finish point
-    static constexpr int ISLAND_CONTAINER_WALL_THRESHOLD{ 4 }; // consecutive walls requiring left turns that indicate possible island
+    static constexpr int LEFT_TURN_ISLAND_THRESHOLD{ 4 }; // consecutive left turns that indicate possible island
     static constexpr int RIGHT_OPEN_THRESHOLD{ 18 }; // distance considered a right opening (cm)
     static constexpr int RIGHT_WALL_DISTANCE_TARGET{ 6 }; // distance aimed against right wall while moving (cm)
     static constexpr int MOVEMENT_CORRECTION{ 20 }; // motor speed correction value when moving
@@ -55,4 +53,16 @@ private:
     // handleBackoff drives the robot slightly backwards so that turns made when detecting the
     // front wall are not too close to the wall.
     void handleBackoff();
+
+    // Omega Version Counters & Flags & Configurations & Helper Methods
+    int rectangleSegmentLengths[4]{ 0, 0, 0, 0 }; // lengths between left turns
+    int rectangleSegmentIndex{ 0 }; // current segment being recorded
+    int currentRectangleSegmentLength{ 0 }; // running length of current segment
+    static constexpr int RECTANGLE_SEGMENT_LENGTH_TOLERANCE{ 5000 }; // allowed deviation in rectangle segment lengths
+    // recordRectangleSegment takes note of the accumulated counter as a length.
+    void recordRectangleSegment();
+    // validateRectangleSegment validates a rectangle through its opposite sides and monotonicity.
+    bool validateRectangleIsland();
+    // resetIslandCheck clears the recorded rectangle segments and the left turn counter.
+    void resetIslandCheck();
 };
