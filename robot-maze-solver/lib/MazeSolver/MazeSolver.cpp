@@ -74,6 +74,7 @@ void MazeSolver::update() {
             motors.stop();
             rgbLED.setGreen();
             reachedGoal = true;
+
             break;
         }
 
