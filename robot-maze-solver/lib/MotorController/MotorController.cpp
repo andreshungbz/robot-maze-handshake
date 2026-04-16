@@ -6,13 +6,13 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 // Public Methods
 
 void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, uint16_t correction) {
-    if (distanceCm > target + 1) {
+    if (distanceCm > target) {
         // if too far from the wall, steer right
-        drive(BASE_SPEED + correction, BASE_SPEED - correction);
+        drive(BASE_SPEED + correction, BASE_SPEED);
     }
-    else if (distanceCm < target - 1) {
+    else if (distanceCm < target) {
         // if too close to the wall, steer left
-        drive(BASE_SPEED - correction, BASE_SPEED + correction);
+        drive(BASE_SPEED, BASE_SPEED + correction);
     }
     else {
         // if at designated distance from the wall, move forward
@@ -46,6 +46,13 @@ void MotorController::pivotLeft90() {
 void MotorController::pivotRight90() {
     pivotRight(RIGHT_TURN_90_SPEED);
     delay(RIGHT_TURN_90_DELAY);
+    stop();
+    delay(200);
+}
+
+void MotorController::pivot180() {
+    drive(PIVOT_180_SPEED, -PIVOT_180_SPEED);
+    delay(PIVOT_180_DELAY);
     stop();
     delay(200);
 }

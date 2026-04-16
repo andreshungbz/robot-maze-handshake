@@ -18,6 +18,7 @@ void MazeSolver::update() {
 
             // right turn movement
             ble.write("[NORMAL] 1. Right + Offset");
+            motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
             handleRightOpeningOffset();
@@ -36,14 +37,15 @@ void MazeSolver::update() {
 
                 // double left turn movement (essentially reverse)
                 ble.write("[ISLAND FOUND] 2.B Reverse + Offset");
+                motors.stop();
                 handleBackoff();
-                motors.pivotLeft90();
-                motors.pivotLeft90();
+                motors.pivot180();
                 handleRightOpeningOffset();
             }
             else {
                 // left turn movement
                 ble.write("[NORMAL] 2.A Left");
+                motors.stop();
                 handleBackoff();
                 motors.pivotLeft90();
             }
@@ -52,6 +54,10 @@ void MazeSolver::update() {
         }
 
         // 3. FORWARD
+        char buffer[12];
+        itoa(rightDistance, buffer, 10);
+        ble.write("[Correction]");
+        ble.write(buffer);
         motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
         break;
     }
@@ -61,6 +67,7 @@ void MazeSolver::update() {
         if (!rightWallDetected) {
             // right turn movement
             ble.write("[ISLAND] 1. Right + Offset");
+            motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
             handleRightOpeningOffset();
@@ -70,6 +77,7 @@ void MazeSolver::update() {
 
         // 2. RIGHT BLOCKED and FRONT BLOCKED then GOAL REACHED
         if (frontWallDetected) {
+            motors.stop();
             handleBackoff();
             motors.stop();
             rgbLED.setGreen();
@@ -79,6 +87,10 @@ void MazeSolver::update() {
         }
 
         // 3. FORWARD
+        char buffer[12];
+        itoa(rightDistance, buffer, 10);
+        ble.write("[Correction] ");
+        ble.write(buffer);
         motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
         break;
     }
@@ -100,12 +112,12 @@ void MazeSolver::resetAll() {
 
 void MazeSolver::handleRightOpeningOffset() {
     motors.driveForward();
-    delay(550);
+    delay(1200);
 }
 
 void MazeSolver::handleUltrasonicPositionOffset() {
     motors.driveForward();
-    delay(350);
+    delay(100);
 }
 
 void MazeSolver::handleBackoff() {

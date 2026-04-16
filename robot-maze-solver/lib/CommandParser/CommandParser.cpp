@@ -18,13 +18,13 @@ void CommandParser::parseCommand(char cmd) {
 
         // Drive Forward
     case 'F':
-        motors.driveForward(175);
+        motors.driveForward(150);
         // ble.write("[MANUAL] Moving forward");
         break;
 
         // Drive Backwards
     case 'B':
-        motors.driveBackward(175);
+        motors.driveBackward(150);
         // ble.write("[MANUAL] Moving backward");
         break;
 
@@ -42,13 +42,13 @@ void CommandParser::parseCommand(char cmd) {
 
         // Pivot Left Gradually
     case '1':
-        motors.pivotLeft(75);
+        motors.pivotLeft(55);
         // ble.write("[MANUAL] Pivot left gradually");
         break;
 
         // Pivot Right Gradually
     case '2':
-        motors.pivotRight(75);
+        motors.pivotRight(55);
         // ble.write("[MANUAL] Pivot right gradually");
         break;
 

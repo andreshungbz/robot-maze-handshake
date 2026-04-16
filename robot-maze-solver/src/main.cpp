@@ -10,7 +10,7 @@
 #include "UltrasonicSensor.h"
 
 // Main Configuration
-constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 15 }; // main loop delay
+constexpr unsigned long AUTONOMOUS_MAIN_LOOP_DELAY{ 20 }; // main loop delay
 RobotMode currentMode{ RobotMode::MANUAL }; // starting mode
 
 // Object Initializations
@@ -36,7 +36,7 @@ void setup() {
 
     // testing forward offset (debugging)
     // motors.driveForward();
-    // delay(1000);
+    // delay(1200);
     // motors.stop();
 }
 
