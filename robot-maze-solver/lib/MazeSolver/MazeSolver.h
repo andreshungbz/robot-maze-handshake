@@ -37,8 +37,6 @@ private:
 
     bool reachedGoal{ false };
     int islandContainerWallCounter{ 0 }; // detecting potential islands
-    int rightWallBlockedCounter{ 0 }; // detecting dead end in island (finish point)
-    static constexpr int GOAL_THRESHOLD{ 3 }; // consecutive right wall blocks in an island that confirms finish point
     static constexpr int ISLAND_CONTAINER_WALL_THRESHOLD{ 4 }; // consecutive walls requiring left turns that indicate possible island
     static constexpr int RIGHT_OPEN_THRESHOLD{ 18 }; // distance considered a right opening (cm)
     static constexpr int RIGHT_WALL_DISTANCE_TARGET{ 6 }; // distance aimed against right wall while moving (cm)

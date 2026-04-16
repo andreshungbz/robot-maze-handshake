@@ -59,8 +59,6 @@ void MazeSolver::update() {
     case Mode::IN_ISLAND: {
         // 1. RIGHT OPEN then TURN RIGHT
         if (!rightWallDetected) {
-            rightWallBlockedCounter = 0;
-
             // right turn movement
             ble.write("[ISLAND] 1. Right + Offset");
             handleUltrasonicPositionOffset();
@@ -70,39 +68,12 @@ void MazeSolver::update() {
             break;
         }
 
-        // 2. RIGHT BLOCKED and FRONT BLOCKED then CHECK GOAL or LEFT TURN
+        // 2. RIGHT BLOCKED and FRONT BLOCKED then GOAL REACHED
         if (frontWallDetected) {
-            ++rightWallBlockedCounter; // one right wall was already detected
             handleBackoff();
-
-            // consecutively check for the next 2 walls
-            for (int i{ 1 }; i <= 2; ++i) {
-                motors.pivotLeft90();
-                uint16_t rDistance = usSensor.getDistanceCm();
-                bool rWDetected = rDistance < RIGHT_OPEN_THRESHOLD;
-
-                if (rWDetected) {
-                    ++rightWallBlockedCounter;
-                }
-            }
-
-            // X. GOAL REACHED (dead end in island)
-            if (rightWallBlockedCounter >= GOAL_THRESHOLD) {
-                ble.write("[ISLAND] 2.B Goal!");
-                // reverse back to dead end, stop, and set RGB to green
-                motors.pivotRight90();
-                motors.pivotRight90();
-                motors.stop();
-                rgbLED.setGreen();
-                reachedGoal = true;
-            }
-            // if the goal wasn't detected, then it must be a left turn
-            else {
-                ble.write("[ISLAND] 2.C Left");
-                motors.pivotRight90();
-            }
-
-            rightWallBlockedCounter = 0;
+            motors.stop();
+            rgbLED.setGreen();
+            reachedGoal = true;
             break;
         }
 
@@ -119,7 +90,6 @@ bool MazeSolver::isGoalReached() const {
 
 void MazeSolver::resetAll() {
     islandContainerWallCounter = 0;
-    rightWallBlockedCounter = 0;
     currentMode = Mode::NORMAL;
     reachedGoal = false;
 
