@@ -10,7 +10,7 @@ public:
 
     // driveForwardWithCorrection readjusts robot path by examining the
     // distance to the target wall.
-    void driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, uint16_t correction);
+    void driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, float kP);
 
     // driveForward moves the robot forwards.
     void driveForward(int speed = BASE_SPEED);

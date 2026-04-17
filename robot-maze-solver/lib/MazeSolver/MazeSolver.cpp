@@ -58,7 +58,7 @@ void MazeSolver::update() {
         itoa(rightDistance, buffer, 10);
         ble.write("[Correction]");
         ble.write(buffer);
-        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
+        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
         break;
     }
 
@@ -91,7 +91,7 @@ void MazeSolver::update() {
         itoa(rightDistance, buffer, 10);
         ble.write("[Correction] ");
         ble.write(buffer);
-        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION);
+        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
         break;
     }
     }

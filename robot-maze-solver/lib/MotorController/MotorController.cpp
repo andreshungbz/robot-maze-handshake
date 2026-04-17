@@ -5,19 +5,20 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 
 // Public Methods
 
-void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, uint16_t correction) {
-    if (distanceCm > target) {
-        // if too far from the wall, steer right
-        drive(BASE_SPEED + correction, BASE_SPEED);
-    }
-    else if (distanceCm < target) {
-        // if too close to the wall, steer left
-        drive(BASE_SPEED, BASE_SPEED + correction);
-    }
-    else {
-        // if at designated distance from the wall, move forward
-        driveForward(BASE_SPEED);
-    }
+void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, float kP) {
+    int error = (int)target - (int)distanceCm;
+
+    // proportional control signal
+    int turn = (int)(error * kP);
+
+    // clamp correction to avoid extreme motor imbalance
+    if (turn > 40) turn = 40;
+    if (turn < -40) turn = -40;
+
+    int leftSpeed = BASE_SPEED + turn;
+    int rightSpeed = BASE_SPEED - turn;
+
+    drive(leftSpeed, rightSpeed);
 }
 
 void MotorController::driveForward(int speed) {
