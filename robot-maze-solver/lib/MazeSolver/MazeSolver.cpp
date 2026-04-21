@@ -4,16 +4,22 @@ MazeSolver::MazeSolver(BLEController& ble, LineSensor& lineSensor, MotorControll
     : ble(ble), lfSensor(lineSensor), motors(motors), rgbLED(rgbLED), usSensor(usSensor) {
 }
 
+bool cooldown = false;
+
 void MazeSolver::update() {
     // read sensors
     uint16_t rightDistance = usSensor.getDistanceCm();
     bool rightWallDetected = rightDistance < RIGHT_OPEN_THRESHOLD;
     bool frontWallDetected = lfSensor.isWallAhead();
 
+    if(cooldown == true){
+        cooldown = rightWallDetected ? false : true
+    }
+
     switch (currentMode) {
     case Mode::NORMAL: {
         // 1. RIGHT OPEN then TURN RIGHT
-        if (!rightWallDetected) {
+        if (!rightWallDetected && cooldown == false) {
             islandContainerWallCounter = 0;
 
             // right turn movement
@@ -21,6 +27,7 @@ void MazeSolver::update() {
             motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
+            cooldown = true;
             handleRightOpeningOffset();
 
             break;
@@ -40,6 +47,7 @@ void MazeSolver::update() {
                 motors.stop();
                 handleBackoff();
                 motors.pivot180();
+                cooldown = true;
                 handleRightOpeningOffset();
             }
             else {
@@ -64,12 +72,13 @@ void MazeSolver::update() {
 
     case Mode::IN_ISLAND: {
         // 1. RIGHT OPEN then TURN RIGHT
-        if (!rightWallDetected) {
+        if (!rightWallDetected && cooldown == false) {
             // right turn movement
             ble.write("[ISLAND] 1. Right + Offset");
             motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
+            cooldown = true;
             handleRightOpeningOffset();
 
             break;
@@ -112,7 +121,7 @@ void MazeSolver::resetAll() {
 
 void MazeSolver::handleRightOpeningOffset() {
     motors.driveForward();
-    delay(1100);
+    delay(600);
 }
 
 void MazeSolver::handleUltrasonicPositionOffset() {
