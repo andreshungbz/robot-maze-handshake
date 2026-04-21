@@ -4,7 +4,7 @@ MazeSolver::MazeSolver(BLEController& ble, LineSensor& lineSensor, MotorControll
     : ble(ble), lfSensor(lineSensor), motors(motors), rgbLED(rgbLED), usSensor(usSensor) {
 }
 
-bool cooldown = false;
+bool rightTurnCooldown = false;
 
 void MazeSolver::update() {
     // read sensors
@@ -12,14 +12,14 @@ void MazeSolver::update() {
     bool rightWallDetected = rightDistance < RIGHT_OPEN_THRESHOLD;
     bool frontWallDetected = lfSensor.isWallAhead();
 
-    if (cooldown == true) {
-        cooldown = rightWallDetected ? false : true;
+    if (rightTurnCooldown == true) {
+        rightTurnCooldown = rightWallDetected ? false : true;
     }
 
     switch (currentMode) {
     case Mode::NORMAL: {
         // 1. RIGHT OPEN then TURN RIGHT
-        if (!rightWallDetected && cooldown == false) {
+        if (!rightWallDetected && rightTurnCooldown == false) {
             islandContainerWallCounter = 0;
 
             // right turn movement
@@ -27,7 +27,7 @@ void MazeSolver::update() {
             motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
-            cooldown = true;
+            rightTurnCooldown = true;
             handleRightOpeningOffset();
 
             break;
@@ -47,7 +47,7 @@ void MazeSolver::update() {
                 motors.stop();
                 handleBackoff();
                 motors.pivot180();
-                cooldown = true;
+                rightTurnCooldown = true;
                 handleRightOpeningOffset();
             }
             else {
@@ -72,13 +72,13 @@ void MazeSolver::update() {
 
     case Mode::IN_ISLAND: {
         // 1. RIGHT OPEN then TURN RIGHT
-        if (!rightWallDetected && cooldown == false) {
+        if (!rightWallDetected && rightTurnCooldown == false) {
             // right turn movement
             ble.write("[ISLAND] 1. Right + Offset");
             motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
-            cooldown = true;
+            rightTurnCooldown = true;
             handleRightOpeningOffset();
 
             break;
@@ -113,7 +113,7 @@ bool MazeSolver::isGoalReached() const {
 void MazeSolver::resetAll() {
     islandContainerWallCounter = 0;
     currentMode = Mode::NORMAL;
-    cooldown = false;
+    rightTurnCooldown = false;
     rgbLED.turnOff();
     reachedGoal = false;
 }
