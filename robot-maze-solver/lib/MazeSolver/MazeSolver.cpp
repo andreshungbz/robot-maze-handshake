@@ -113,6 +113,7 @@ bool MazeSolver::isGoalReached() const {
 void MazeSolver::resetAll() {
     islandContainerWallCounter = 0;
     currentMode = Mode::NORMAL;
+    cooldown = false;
     rgbLED.turnOff();
     reachedGoal = false;
 }
