@@ -6,7 +6,7 @@ class MotorController {
 public:
     // MotorController Configuration
 
-    static constexpr int BASE_SPEED{ 90 };
+    static constexpr int BASE_SPEED{ 105 };
 
     // driveForwardWithCorrection readjusts robot path by examining the
     // distance to the target wall.
@@ -37,10 +37,10 @@ private:
 
     static constexpr int LEFT_TURN_90_SPEED{ 200 };
     static constexpr int LEFT_TURN_90_DELAY{ 175 };
-    static constexpr int RIGHT_TURN_90_SPEED{ 200 };
-    static constexpr int RIGHT_TURN_90_DELAY{ 190 };
+    static constexpr int RIGHT_TURN_90_SPEED{ 225 };
+    static constexpr int RIGHT_TURN_90_DELAY{ 225 };
     static constexpr int PIVOT_180_SPEED{ 200 };
-    static constexpr int PIVOT_180_DELAY{ 475 };
+    static constexpr int PIVOT_180_DELAY{ 500 };
 
     // Helper Methods
 

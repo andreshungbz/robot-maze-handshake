@@ -11,12 +11,8 @@ void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t t
     // proportional control signal
     int turn = (int)(error * kP);
 
-    // clamp correction to avoid extreme motor imbalance
-    if (turn > 40) turn = 40;
-    if (turn < -40) turn = -40;
-
-    int leftSpeed = BASE_SPEED + turn;
-    int rightSpeed = BASE_SPEED - turn;
+    int leftSpeed = BASE_SPEED - turn;
+    int rightSpeed = BASE_SPEED + turn;
 
     drive(leftSpeed, rightSpeed);
 }
@@ -52,7 +48,7 @@ void MotorController::pivotRight90() {
 }
 
 void MotorController::pivot180() {
-    drive(PIVOT_180_SPEED, -PIVOT_180_SPEED);
+    drive(-PIVOT_180_SPEED, PIVOT_180_SPEED);
     delay(PIVOT_180_DELAY);
     stop();
     delay(200);
