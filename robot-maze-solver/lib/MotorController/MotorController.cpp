@@ -7,12 +7,34 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 
 void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, float kP) {
     int error = (int)target - (int)distanceCm;
-
-    // proportional control signal
     int turn = (int)(error * kP);
 
     int leftSpeed = BASE_SPEED - turn;
     int rightSpeed = BASE_SPEED + turn;
+
+    drive(leftSpeed, rightSpeed);
+}
+
+void MotorController::driveFollowRightWall(uint16_t distanceCm, uint16_t target, float kP, int openThreshold) {
+    int leftSpeed, rightSpeed;
+
+    // normal proportional control
+    if (distanceCm < openThreshold) {
+        int error = (int)target - (int)distanceCm;
+        int turn = (int)(error * kP);
+
+        leftSpeed = BASE_SPEED - turn;
+        rightSpeed = BASE_SPEED + turn;
+    }
+    // skew right with appropriate strength
+    else {
+        leftSpeed = BASE_SPEED + 30;
+        rightSpeed = BASE_SPEED - 20;
+    }
+
+    // clamp speeds
+    leftSpeed = constrain(leftSpeed, 0, 255);
+    rightSpeed = constrain(rightSpeed, 0, 255);
 
     drive(leftSpeed, rightSpeed);
 }

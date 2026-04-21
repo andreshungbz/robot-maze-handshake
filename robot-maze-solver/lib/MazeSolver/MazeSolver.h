@@ -36,7 +36,6 @@ private:
     // Counters & Flags & Configurations
 
     bool reachedGoal{ false };
-    bool rightTurnCooldown{ false };
     int islandContainerWallCounter{ 0 }; // detecting potential islands
     static constexpr int ISLAND_CONTAINER_WALL_THRESHOLD{ 4 }; // consecutive walls requiring left turns that indicate possible island
     static constexpr int RIGHT_OPEN_THRESHOLD{ 18 }; // distance considered a right opening (cm)
