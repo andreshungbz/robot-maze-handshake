@@ -4,8 +4,6 @@ MazeSolver::MazeSolver(BLEController& ble, LineSensor& lineSensor, MotorControll
     : ble(ble), lfSensor(lineSensor), motors(motors), rgbLED(rgbLED), usSensor(usSensor) {
 }
 
-bool rightTurnCooldown = false;
-
 void MazeSolver::update() {
     // read sensors
     uint16_t rightDistance = usSensor.getDistanceCm();
