@@ -10,22 +10,23 @@ void MazeSolver::update() {
     bool rightWallDetected = rightDistance < RIGHT_OPEN_THRESHOLD;
     bool frontWallDetected = lfSensor.isWallAhead();
 
+    // if currently cooling down, stop when right wall is detected
     if (rightTurnCooldown == true) {
         rightTurnCooldown = rightWallDetected ? false : true;
     }
 
     switch (currentMode) {
     case Mode::NORMAL: {
-        // 1. RIGHT OPEN then TURN RIGHT
-        if (!rightWallDetected && rightTurnCooldown == false) {
+        // 1. RIGHT OPEN (and not cooldown) then TURN RIGHT
+        if (!rightWallDetected && !rightTurnCooldown) {
             islandContainerWallCounter = 0;
+            rightTurnCooldown = true;
 
             // right turn movement
             ble.write("[NORMAL] 1. Right + Offset");
             motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
-            rightTurnCooldown = true;
             handleRightOpeningOffset();
 
             break;
@@ -38,6 +39,7 @@ void MazeSolver::update() {
             if (islandContainerWallCounter == 4) {
                 // change mode
                 currentMode = Mode::IN_ISLAND;
+                rightTurnCooldown = true;
                 rgbLED.setRed();
 
                 // double left turn movement (essentially reverse)
@@ -45,7 +47,6 @@ void MazeSolver::update() {
                 motors.stop();
                 handleBackoff();
                 motors.pivot180();
-                rightTurnCooldown = true;
                 handleRightOpeningOffset();
             }
             else {
@@ -60,23 +61,20 @@ void MazeSolver::update() {
         }
 
         // 3. FORWARD
-        char buffer[12];
-        itoa(rightDistance, buffer, 10);
-        ble.write("[Correction]");
-        ble.write(buffer);
         motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
         break;
     }
 
     case Mode::IN_ISLAND: {
-        // 1. RIGHT OPEN then TURN RIGHT
-        if (!rightWallDetected && rightTurnCooldown == false) {
+        // 1. RIGHT OPEN (and not cooldown) then TURN RIGHT
+        if (!rightWallDetected && !rightTurnCooldown) {
+            rightTurnCooldown = true;
+
             // right turn movement
             ble.write("[ISLAND] 1. Right + Offset");
             motors.stop();
             handleUltrasonicPositionOffset();
             motors.pivotRight90();
-            rightTurnCooldown = true;
             handleRightOpeningOffset();
 
             break;
@@ -94,10 +92,6 @@ void MazeSolver::update() {
         }
 
         // 3. FORWARD
-        char buffer[12];
-        itoa(rightDistance, buffer, 10);
-        ble.write("[Correction] ");
-        ble.write(buffer);
         motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
         break;
     }
@@ -109,11 +103,11 @@ bool MazeSolver::isGoalReached() const {
 }
 
 void MazeSolver::resetAll() {
-    islandContainerWallCounter = 0;
     currentMode = Mode::NORMAL;
-    rightTurnCooldown = false;
-    rgbLED.turnOff();
     reachedGoal = false;
+    rightTurnCooldown = false;
+    islandContainerWallCounter = 0;
+    rgbLED.turnOff();
 }
 
 // Helper Methods
