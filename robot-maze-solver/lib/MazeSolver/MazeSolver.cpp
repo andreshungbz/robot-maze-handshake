@@ -12,8 +12,8 @@ void MazeSolver::update() {
     bool rightWallDetected = rightDistance < RIGHT_OPEN_THRESHOLD;
     bool frontWallDetected = lfSensor.isWallAhead();
 
-    if(cooldown == true){
-        cooldown = rightWallDetected ? false : true
+    if (cooldown == true) {
+        cooldown = rightWallDetected ? false : true;
     }
 
     switch (currentMode) {
