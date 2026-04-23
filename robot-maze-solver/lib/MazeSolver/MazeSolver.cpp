@@ -124,17 +124,17 @@ void MazeSolver::resetAfterGoal() {
 
 void MazeSolver::handleRightOpeningOffset() {
     motors.driveForward();
-    delay(650);
+    delay(700);
 }
 
 void MazeSolver::handleUltrasonicPositionOffset() {
     motors.driveForward();
-    delay(500);
+    delay(700);
 }
 
 void MazeSolver::handleBackoff() {
     motors.driveBackward();
-    delay(200);
+    delay(100);
 }
 
 void MazeSolver::handleDelay() {
