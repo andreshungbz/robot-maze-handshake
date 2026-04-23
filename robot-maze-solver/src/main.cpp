@@ -77,7 +77,7 @@ void loop() {
 
         // if the final point is achieved, switch back to [MANUAL] mode
         if (mazeSolver.isGoalReached()) {
-            mazeSolver.resetAll();
+            mazeSolver.resetAfterGoal();
             currentMode = RobotMode::MANUAL;
             ble.write("[AUTONOMOUS] Goal reached! Switching to [MANUAL] mode");
             return;

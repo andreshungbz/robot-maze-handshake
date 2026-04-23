@@ -19,6 +19,8 @@ public:
     bool isGoalReached() const;
     // resetAll reverts all flags, counters, and values to their initial states.
     void resetAll();
+    // resetAfterGoal reverts all maze solver state except for the RGB LED.
+    void resetAfterGoal();
 
 private:
     // Mode distinguishes the different logic taken by MazeSolver.
@@ -41,7 +43,7 @@ private:
     static constexpr int ISLAND_CONTAINER_WALL_THRESHOLD{ 4 }; // consecutive walls requiring left turns that indicate possible island
     static constexpr int RIGHT_OPEN_THRESHOLD{ 18 }; // distance considered a right opening (cm)
     static constexpr int RIGHT_WALL_DISTANCE_TARGET{ 6 }; // distance aimed against right wall while moving (cm)
-    static constexpr float MOVEMENT_CORRECTION_PROPORTION{ 3.0f }; // motor speed correction when moving
+    static constexpr float MOVEMENT_CORRECTION_PROPORTION{ 2.5f }; // motor speed correction when moving
 
     // Helper Methods
 
@@ -54,4 +56,5 @@ private:
     // handleBackoff drives the robot slightly backwards so that turns made when detecting the
     // front wall are not too close to the wall.
     void handleBackoff();
+    void handleDelay();
 };
