@@ -78,6 +78,11 @@ func (g *Gamepad) Start(out chan<- byte) {
 						out <- commands.CommandMap['A'].Code
 					}
 
+				case "misc1":
+					if e.State == sdl.PRESSED {
+						out <- commands.CommandMap['I'].Code
+					}
+
 				case "back":
 					if e.State == sdl.PRESSED {
 						out <- commands.CommandMap['M'].Code

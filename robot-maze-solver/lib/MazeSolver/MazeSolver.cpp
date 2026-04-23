@@ -120,6 +120,10 @@ void MazeSolver::resetAfterGoal() {
     islandContainerWallCounter = 0;
 }
 
+void MazeSolver::setInIsland() {
+    currentMode = Mode::IN_ISLAND;
+}
+
 // Helper Methods
 
 void MazeSolver::handleRightOpeningOffset() {

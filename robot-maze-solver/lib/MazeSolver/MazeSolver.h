@@ -21,6 +21,8 @@ public:
     void resetAll();
     // resetAfterGoal reverts all maze solver state except for the RGB LED.
     void resetAfterGoal();
+    // setInIsland enables IN_ISLAND mode for the maze solver.
+    void setInIsland();
 
 private:
     // Mode distinguishes the different logic taken by MazeSolver.
@@ -56,5 +58,6 @@ private:
     // handleBackoff drives the robot slightly backwards so that turns made when detecting the
     // front wall are not too close to the wall.
     void handleBackoff();
+    // handleDelay stops the robot for a moment after turns.
     void handleDelay();
 };

@@ -23,7 +23,7 @@ RGBLEDController rgbLED{};
 UltrasonicSensor us{};
 // higher-level objects
 MazeSolver mazeSolver{ ble, lfs, motors, rgbLED, us };
-CommandParser parser{ ble, rgbLED, motors, currentMode };
+CommandParser parser{ ble, rgbLED, motors, currentMode, mazeSolver };
 
 // forward declaration for introduction
 void introduction();

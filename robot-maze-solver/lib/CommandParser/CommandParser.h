@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BLEController.h"
+#include "MazeSolver.h"
 #include "MotorController.h"
 #include "RGBLEDController.h"
 #include "RobotMode.h"
@@ -10,8 +11,8 @@
 class CommandParser {
 public:
     // constructor
-    CommandParser(BLEController& ble, RGBLEDController& led, MotorController& motors, RobotMode& mode)
-        : ble(ble), rgbLED(led), motors(motors), currentMode(mode), RGBLEDOn(false) {
+    CommandParser(BLEController& ble, RGBLEDController& led, MotorController& motors, RobotMode& mode, MazeSolver& solver)
+        : ble(ble), rgbLED(led), motors(motors), currentMode(mode), mazeSolver(solver), RGBLEDOn(false) {
     }
 
     // parseCommand examines commands and activates the appropriate module or motors.
@@ -24,5 +25,6 @@ private:
     RGBLEDController& rgbLED;
     MotorController& motors;
     RobotMode& currentMode;
+    MazeSolver& mazeSolver;
     bool RGBLEDOn;
 };

@@ -18,6 +18,7 @@ var CommandMap = map[byte]Command{
 	'2': {Code: '2', Action: "Pivot robot to the right"},
 	'S': {Code: 'S', Action: "Stops the robot"},
 	'A': {Code: 'A', Action: "Enable AUTONOMOUS mode on robot"},
+	'I': {Code: 'I', Action: "Enable AUTONOMOUS mode on robot with IN_ISLAND mode set"},
 	'M': {Code: 'M', Action: "Switch to MANUAL mode on robot"},
 }
 
@@ -32,6 +33,7 @@ var KeyboardOrder = []byte{
 	'2',
 	'S',
 	'A',
+	'I',
 	'M',
 }
 
@@ -45,6 +47,7 @@ var GamepadMap = map[string]byte{
 	"lefttrigger":   '1',
 	"righttrigger":  '2',
 	"start":         'A',
+	"misc1":         'I',
 	"back":          'M',
 }
 
@@ -58,6 +61,7 @@ var GamepadDisplay = map[string]string{
 	"lefttrigger":   "Left Trigger",
 	"righttrigger":  "Right Trigger",
 	"start":         "Start Button",
+	"misc1":         "Star Button",
 	"back":          "Back Button",
 }
 
@@ -71,5 +75,6 @@ var GamepadOrder = []string{
 	"lefttrigger",
 	"righttrigger",
 	"start",
+	"misc1",
 	"back",
 }
