@@ -69,6 +69,7 @@ void CommandParser::parseCommand(char cmd) {
         ble.write("[MANUAL] Switching to [AUTONOMOUS] mode with [IN_ISLAND] set...");
         currentMode = RobotMode::AUTONOMOUS;
         mazeSolver.setInIsland();
+        rgbLED.setRed();
         break;
 
         // Redundancy message for [MANUAL] Mode
