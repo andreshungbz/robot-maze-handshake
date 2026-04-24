@@ -99,5 +99,5 @@ func DetectGreen(img *gocv.Mat) bool {
 	}
 
 	// return threshold comparison
-	return maxArea > 150
+	return maxArea > 100
 }

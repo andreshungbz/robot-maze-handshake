@@ -185,21 +185,21 @@ func ExecuteSequence(d *Drone) {
 		return
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	if err := d.Flip("f"); err != nil {
 		log.Println(err)
 		return
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	if err := d.Forward(250); err != nil {
 		log.Println(err)
 		return
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	if err := d.Land(); err != nil {
 		log.Println(err)
