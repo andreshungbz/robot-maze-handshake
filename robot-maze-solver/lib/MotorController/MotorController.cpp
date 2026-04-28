@@ -6,13 +6,33 @@ void hw_set_motor_speed(int leftSpeed, int rightSpeed);
 // Public Methods
 
 void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t target, float kP) {
+    static float lastTurn = 0;  // smoothing memory
     int error = (int)target - (int)distanceCm;
 
-    // proportional control signal
-    int turn = (int)(error * kP);
+    // ignore smaller differences
+    const int DEADZONE = 2;
+    if (abs(error) < DEADZONE) {
+        drive(BASE_SPEED, BASE_SPEED);
+        lastTurn = 0;
+        return;
+    }
 
-    int leftSpeed = BASE_SPEED - turn;
-    int rightSpeed = BASE_SPEED + turn;
+    // use proportional control
+    float turn = error * kP;
+
+    // clamp protection
+    const float MAX_TURN = 30.0f;
+    if (turn > MAX_TURN) turn = MAX_TURN;
+    if (turn < -MAX_TURN) turn = -MAX_TURN;
+
+    // smooth correction
+    const float SMOOTHING = 0.7f; // closer to 1 = smoother
+    turn = SMOOTHING * lastTurn + (1.0f - SMOOTHING) * turn;
+    lastTurn = turn;
+
+    // apply correction
+    int leftSpeed = BASE_SPEED - (int)turn;
+    int rightSpeed = BASE_SPEED + (int)turn;
 
     drive(leftSpeed, rightSpeed);
 }

@@ -128,12 +128,12 @@ void MazeSolver::setInIsland() {
 
 void MazeSolver::handleRightOpeningOffset() {
     motors.driveForward();
-    delay(700);
+    delay(725);
 }
 
 void MazeSolver::handleUltrasonicPositionOffset() {
     motors.driveForward();
-    delay(700);
+    delay(725);
 }
 
 void MazeSolver::handleBackoff() {
