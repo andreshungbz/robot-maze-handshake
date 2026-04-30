@@ -11,10 +11,10 @@ void MazeSolver::update() {
     bool frontWallDetected = lfSensor.isWallAhead();
 
     // debugging
-    char buffer[12];
-    itoa(rightDistance, buffer, 10);
-    ble.write("[Ultrasonic]");
-    ble.write(buffer);
+    // char buffer[12];
+    // itoa(rightDistance, buffer, 10);
+    // ble.write("[Ultrasonic]");
+    // ble.write(buffer);
 
     // if currently cooling down, stop when right wall is detected
     if (rightTurnCooldown == true) {
