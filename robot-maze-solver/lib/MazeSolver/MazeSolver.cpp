@@ -10,6 +10,12 @@ void MazeSolver::update() {
     bool rightWallDetected = rightDistance < RIGHT_OPEN_THRESHOLD;
     bool frontWallDetected = lfSensor.isWallAhead();
 
+    // debugging
+    char buffer[12];
+    itoa(rightDistance, buffer, 10);
+    ble.write("[Ultrasonic]");
+    ble.write(buffer);
+
     // if currently cooling down, stop when right wall is detected
     if (rightTurnCooldown == true) {
         rightTurnCooldown = rightWallDetected ? false : true;
@@ -47,7 +53,7 @@ void MazeSolver::update() {
                 motors.stop();
                 handleBackoff();
                 motors.pivot180();
-                handleRightOpeningOffset();
+                handle180Offset();
             }
             else {
                 // left turn movement
@@ -61,7 +67,13 @@ void MazeSolver::update() {
         }
 
         // 3. FORWARD
-        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
+        if (rightTurnCooldown) {
+            motors.driveForward();
+        }
+        else {
+            motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
+        }
+
         break;
     }
 
@@ -71,7 +83,6 @@ void MazeSolver::update() {
             rightTurnCooldown = true;
 
             // right turn movement
-
             motors.stop();
             ble.write("[ISLAND] Right");
             motors.stop();
@@ -95,7 +106,13 @@ void MazeSolver::update() {
         }
 
         // 3. FORWARD
-        motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
+        if (rightTurnCooldown) {
+            motors.driveForward();
+        }
+        else {
+            motors.driveForwardWithCorrection(rightDistance, RIGHT_WALL_DISTANCE_TARGET, MOVEMENT_CORRECTION_PROPORTION);
+        }
+
         break;
     }
     }
@@ -127,18 +144,23 @@ void MazeSolver::setInIsland() {
 // Helper Methods
 
 void MazeSolver::handleRightOpeningOffset() {
-    motors.driveForward();
+    motors.driveForward(80);
     delay(725);
 }
 
 void MazeSolver::handleUltrasonicPositionOffset() {
-    motors.driveForward();
+    motors.driveForward(80);
     delay(725);
 }
 
+void MazeSolver::handle180Offset() {
+    motors.driveForward(80);
+    delay(1000);
+}
+
 void MazeSolver::handleBackoff() {
-    motors.driveBackward();
-    delay(100);
+    motors.driveBackward(80);
+    delay(200);
 }
 
 void MazeSolver::handleDelay() {
