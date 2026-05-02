@@ -7,6 +7,10 @@ The following robots/kits are used in this project:
 - [Makeblock Ultimate 2.0 Robot Kit](https://support.makeblock.com/hc/en-us/sections/360001778514-Ultimate-2-0)
 - [DJI Ryze Tello Drone](https://www.ryzerobotics.com/tello)
 
+## Successful Trial Video
+
+A recorded video of a successful trial can be found here: https://youtu.be/ZnxiNk_O_cc.
+
 ## Programs
 
 ### `robot-maze-solver` (C++)
