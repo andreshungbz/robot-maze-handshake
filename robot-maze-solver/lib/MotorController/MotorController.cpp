@@ -10,7 +10,7 @@ void MotorController::driveForwardWithCorrection(uint16_t distanceCm, uint16_t t
     int error = (int)target - (int)distanceCm;
 
     // ignore smaller differences
-    const int DEADZONE = 2;
+    const int DEADZONE = 1;
     if (abs(error) < DEADZONE) {
         drive(BASE_SPEED, BASE_SPEED);
         lastTurn = 0;
