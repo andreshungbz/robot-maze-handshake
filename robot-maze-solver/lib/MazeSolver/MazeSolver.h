@@ -45,7 +45,7 @@ private:
     static constexpr int ISLAND_CONTAINER_WALL_THRESHOLD{ 4 }; // consecutive walls requiring left turns that indicate possible island
     static constexpr int RIGHT_OPEN_THRESHOLD{ 25 }; // distance considered a right opening (cm)
     static constexpr int RIGHT_WALL_DISTANCE_TARGET{ 7 }; // distance aimed against right wall while moving (cm)
-    static constexpr float MOVEMENT_CORRECTION_PROPORTION{ 2.75f }; // motor speed correction when moving
+    static constexpr float MOVEMENT_CORRECTION_PROPORTION{ 3.0f }; // motor speed correction when moving
 
     // Helper Methods
 
