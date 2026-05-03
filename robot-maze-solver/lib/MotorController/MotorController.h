@@ -35,12 +35,12 @@ public:
 private:
     // MotorController Configuration
 
-    static constexpr int LEFT_TURN_90_SPEED{ 225 };
-    static constexpr int LEFT_TURN_90_DELAY{ 125 };
-    static constexpr int RIGHT_TURN_90_SPEED{ 225 };
+    static constexpr int LEFT_TURN_90_SPEED{ 240 };
+    static constexpr int LEFT_TURN_90_DELAY{ 135 };
+    static constexpr int RIGHT_TURN_90_SPEED{ 240 };
     static constexpr int RIGHT_TURN_90_DELAY{ 165 };
-    static constexpr int PIVOT_180_SPEED{ 200 };
-    static constexpr int PIVOT_180_DELAY{ 460 };
+    static constexpr int PIVOT_180_SPEED{ 240 };
+    static constexpr int PIVOT_180_DELAY{ 430 };
 
     // Helper Methods
 
