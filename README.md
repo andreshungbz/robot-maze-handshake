@@ -9,7 +9,7 @@ The following robots/kits are used in this project:
 
 ## Successful Trial Video
 
-A recorded video of a successful trial can be found here: https://youtu.be/ZnxiNk_O_cc.
+A recorded video of a successful trial can be found here: https://youtu.be/GW04AHzJZnY.
 
 ## Programs
 
